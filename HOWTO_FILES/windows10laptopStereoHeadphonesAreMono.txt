@@ -1,0 +1,12 @@
+Problem: windows laptop wired stereo headphones not really stereo
+Fix:
+in win10 search enter "sound"
+click "sound settings"
+(plug in headphones)
+for "choose your output device" choose the headphones
+then choose "device properties"
+then choose "additional device properties"
+then choose "advanced" tab
+unclick "enable audio enhancements"
+now sound should be true stereo on headphones
+test with youtube "Left and Right Stereo Sound Test"

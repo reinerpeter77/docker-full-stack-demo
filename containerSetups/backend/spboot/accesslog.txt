@@ -1,0 +1,118 @@
+from db:  pc 31 val: 123 16 hours, 38 min, 36 sec
+from db:  pc 31 val: 123 12 hours, 49 min, 55 sec
+from db:  pc 31 val: 123 12 hours, 49 min, 57 sec
+from db:  pc 31 val: 123 12 hours, 49 min, 58 sec
+from db:  pc 31 val: 123 08 hours, 55 min, 31 sec
+from db:  pc 31 val: 123 08 hours, 59 min, 36 sec
+from db:  pc 31 val: 123 09 hours, 01 min, 27 sec
+from db:  pc 31 val: 123 09 hours, 09 min, 02 sec
+from db:  pc 31 val: 123 09 hours, 18 min, 33 sec
+from db:  pc 31 val: 123 09 hours, 23 min, 21 sec
+from db:  pc 31 val: 123 09 hours, 23 min, 42 sec
+from db:  pc 31 val: 123 09 hours, 23 min, 58 sec
+from db: Client does not support authentication protocol requested by server; consider upgrading MySQL client pc 31 val: 123 09 hours, 26 min, 28 sec
+2021/01/14 09:32:21 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 3 ms ago. | pc 31 val: 123 09 hours, 32 min, 21 sec
+2021/01/14 09:38:50 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 09 hours, 38 min, 50 sec
+2021/01/14 09:38:56 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 09 hours, 38 min, 56 sec
+2021/01/14 09:39:06 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 09 hours, 39 min, 06 sec
+2021/01/14 13:22:52 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 1 ms ago. | pc 31 val: 123 13 hours, 22 min, 52 sec
+2021/01/14 13:23:30 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 13 hours, 23 min, 30 sec
+2021/01/14 13:23:35 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 13 hours, 23 min, 35 sec
+2021/01/14 13:23:44 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 1 ms ago. | pc 31 val: 123 13 hours, 23 min, 44 sec
+2021/01/14 13:34:15 secret:  .secret named color2:  | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 13 hours, 34 min, 15 sec
+2021/01/14 13:34:19 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 13 hours, 34 min, 19 sec
+2021/01/14 13:34:34 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 13 hours, 34 min, 34 sec
+2021/01/14 14:42:31 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 42 min, 31 sec
+2021/01/14 14:42:45 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 42 min, 45 sec
+2021/01/14 14:43:37 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 43 min, 37 sec
+2021/01/14 14:43:39 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 43 min, 39 sec
+2021/01/14 14:44:24 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 44 min, 24 sec
+2021/01/14 14:45:43 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 45 min, 43 sec
+2021/01/14 14:46:17 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 46 min, 17 sec
+2021/01/14 14:47:37 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 47 min, 37 sec
+2021/01/14 14:48:22 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 48 min, 22 sec
+2021/01/14 14:52:25 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 52 min, 25 sec
+2021/01/14 14:52:34 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 52 min, 34 sec
+2021/01/14 14:52:41 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 52 min, 41 sec
+2021/01/14 14:52:58 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 52 min, 58 sec
+2021/01/14 14:54:22 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 54 min, 22 sec
+2021/01/14 14:54:28 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 54 min, 28 sec
+2021/01/14 14:55:06 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 55 min, 06 sec
+2021/01/14 14:55:07 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 55 min, 07 sec
+2021/01/14 14:55:14 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 55 min, 14 sec
+2021/01/14 14:55:16 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 55 min, 16 sec
+2021/01/14 14:56:00 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 56 min, 00 sec
+2021/01/14 14:56:06 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 56 min, 06 sec
+2021/01/14 14:56:14 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 56 min, 14 sec
+2021/01/14 14:56:17 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 56 min, 17 sec
+2021/01/14 14:56:22 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 56 min, 22 sec
+2021/01/14 14:56:58 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 56 min, 58 sec
+2021/01/14 14:57:03 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 57 min, 03 sec
+2021/01/14 14:58:06 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 58 min, 06 sec
+2021/01/14 14:58:27 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 58 min, 27 sec
+2021/01/14 14:58:48 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 123 14 hours, 58 min, 48 sec
+2021/01/14 14:58:51 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 987 14 hours, 58 min, 51 sec
+2021/01/14 14:59:38 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 987 14 hours, 59 min, 38 sec
+2021/01/14 15:00:49 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 987 15 hours, 00 min, 49 sec
+2021/01/14 15:01:11 secret:  .secret named color2:  | from db: CloudHelper: ford  usaCloudHelper: toyota  japan | pc 31 val: 987 15 hours, 01 min, 11 sec
+2021/02/10 14:41:45 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 14 hours, 41 min, 45 sec
+2021/02/10 14:41:55 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 14 hours, 41 min, 55 sec
+2021/02/10 14:41:59 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 14 hours, 41 min, 59 sec
+2021/02/10 14:42:03 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 14 hours, 42 min, 03 sec
+2021/02/10 14:42:25 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 12399 14 hours, 42 min, 25 sec
+2021/02/10 15:09:48 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 12399 15 hours, 09 min, 48 sec
+2021/02/12 06:24:23 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 06 hours, 24 min, 23 sec
+2021/02/12 06:24:31 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 06 hours, 24 min, 31 sec
+2021/02/12 06:24:49 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 06 hours, 24 min, 49 sec
+2021/02/12 07:15:59 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 07 hours, 15 min, 59 sec
+2021/02/12 07:16:05 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 07 hours, 16 min, 05 sec
+2021/02/12 10:08:09 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 10 hours, 08 min, 09 sec
+2021/02/13 13:35:30 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 13 hours, 35 min, 30 sec
+2021/02/13 14:03:28 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 14 hours, 03 min, 28 sec
+2021/02/13 14:04:18 secret:  .secret named color2: null | from db: Communications link failure
+
+Last packet sent to the server was 0 ms ago. | pc 31 val: 123 14 hours, 04 min, 18 sec

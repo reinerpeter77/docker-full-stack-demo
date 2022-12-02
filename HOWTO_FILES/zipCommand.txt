@@ -1,0 +1,6 @@
+
+# this backs up full-stack-docr recursively (-r) while excluding (-x) the
+# listed folders which get rebuilt anyway and are very big
+# It puts the zip on the folder shared with vm host, so it gets
+# backed up elsewhere and doesn't fill up the vm.
+zip -r /remote/feb7.zip full-stack-docr -x *.git* */node_modules/**\* */spboot/build/**\* */mySqlWorkDir/**\*

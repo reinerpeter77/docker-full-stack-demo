@@ -1,0 +1,63 @@
+{
+  "hashbrowns": "since json doesnt have comments I use potatoes instead",
+  "warning message": "delete .eslintcache if weird errors occur describing syntax errors!",
+  "to fill node_modules run ...   npm install": "it reads this file for what to setup and download",
+  "au-gratin": "this project made using 'npx create-react-app react_app1'. If it's hopelessly broken, make a new project this way & copy files.",
+  "homefries": "if you modify this file, docker image must be removed & rebuilt to take effect",
+  "name": "react_app1",
+  "version": "0.1.0",
+  "private": true,
+  "WARNING": "specify dependency version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found",
+  "WARNING AGAIN": "specify dependency version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found",
+  "WARNING IN CASE YOU DIDNT SEE THE FIRST TIME": "specify dependency version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found",
+  "to view version of package and its dependencies do this": "run for any entry in node_modules ie...    npm explain yaml",
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.9",
+    "@testing-library/react": "^11.2.3",
+    "@testing-library/user-event": "^12.6.2",
+    "bootstrap": "^5.1.3",
+    "qrcode": "^1.5.1",
+    "randomcolor": "^0.6.2",
+    "react": "^17.0.1",
+    "react-bootstrap": "^2.1.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.1",
+    "web-vitals": "^0.2.4"
+  },
+  "scripts": {
+    "hashbrowns": "these entries called by VSCode launch.json, or by dockerfile, or by shell command",
+    "potatochips": "all of these call 'react-scripts start'  which calls containerSetups/frontend/react/node_modules/react-scripts/scripts/start.js",
+    "start-with-browser": "PORT='3008' react-scripts start",
+    "frenchfries2": "environment variable BROWSER, PORT eaten by js code somewhere down the chain..",
+    "au-gratin": "VSCode always adds a 'start' to its menu regardless of launch.json",
+    "garlicchips": "below is unix syntax for environment vars. Runnin in windows gives error msg",
+    "start3008Nix": "BROWSER='none' PORT='3008' react-scripts start",
+    "picklechips": "below is DOS syntax for environment vars. eg: npm run-script start3008PC ",
+    "cheeto2s": "from bash: 'npm run start3008PC'  below thing runs \\react\\node_modules\\react-scripts\\bin\\react-scripts.js",
+    "start3008PC": "set PORT=3008 && set BROWSER='none' && react-scripts start",
+    "startA": "react-scripts start",
+    "mashedpotatoes": "the entry 'react-scripts build' calls containerSetups/frontend/react/node_modules/react-scripts/scripts/build.js",
+    "build-runnable-creates-build-folder": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

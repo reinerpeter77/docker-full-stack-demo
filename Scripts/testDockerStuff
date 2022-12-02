@@ -1,0 +1,11 @@
+
+
+docker image rm react_docker_image_test
+docker rm -f reactContainerA
+docker build -t react_docker_image_test -f Dockerfile.uses_react_node_modules .
+docker run --name reactContainerA -it -p 3002:3001 -d react_docker_image_test 
+
+# above with -rm removes the image after running it
+# docker ps --no-trunc
+# npx create-react-app my-app
+

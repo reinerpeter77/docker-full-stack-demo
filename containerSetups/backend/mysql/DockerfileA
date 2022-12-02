@@ -1,0 +1,25 @@
+
+FROM mysql:8.0.22
+RUN mkdir /dbscripts && echo "dbscripts created"
+COPY dbscripts/* /dbscripts/
+WORKDIR dbscripts
+# after running installation for first time (new mySqlWorkDir) , create test database from root of repository project:
+# secrets must be setup in project before running
+# command....     Scripts/DatabaseCreateTestUserAndTable.sh
+# or run this script to run in container to setup test user and db:
+# command....    /dbscripts/createUserAndTable.sh
+# active line: cat newUser.sql | sed "s/\*\*\*/$(cat /run/secrets/mysqlPasswd)/" | mysql -h localhost --port 3306 -u root --password=$(cat /run/secrets/rootPass_newDBsetup) mysql
+# active line: cat dbexport.sql |  mysql -h localhost --port 3306 -u dbUser2 --password=$(cat /run/secrets/mysqlPasswd) dbUser2
+RUN chmod 755 createUserAndTable.sh 
+RUN touch abcd
+# verify above: sudo docker-compose -f docker-compose-backendAll.yml exec dbServiceA /bin/sh
+# then "ls"
+
+# copied from dockerhub -->> ENTRYPOINT ["docker-entrypoint.sh"]
+#######COPY my-entrypoint.sh / 
+########RUN chmod 755 /my-entrypoint.sh
+# starts mysql but can't do anything AFTER starting it!:    
+####ENTRYPOINT ["/my-entrypoint.sh"]
+# this is default entrypoint from dockerfile pointed to by dockerhub mysql
+# ok:  ENTRYPOINT ["docker-entrypoint.sh"]
+# ok:  ENTRYPOINT ["/entrypoint.sh"]

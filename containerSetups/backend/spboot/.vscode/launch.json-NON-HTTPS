@@ -1,0 +1,36 @@
+{
+    // this launch.json is for http only and won't work for webAudio examples because of that.
+    // Use other HTTPS json file in this folder instead.
+    // Question: cant figure out where the .class or .jar files get run. Removing the
+    // jar made by ./gradlew build has no effect and does not create a new one!
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": "these are the args!"
+        },
+        {
+          "type": "java",
+          "name": "port 8086 ",
+          "request": "launch",
+          "mainClass": "com.example.springboot.Application",
+          "projectName": "spring-boot",
+          "COMMENT": "id 'org.springframework.boot' version '2.6.3' NEEDS THE FOLLOWING TO RUN CIRCULAR REFERENCE:",
+          "vmArgszzzz": "-Dserver.port=8086 -Dspring.main.allow-circular-references=true",
+          "vmArgsqqq": "-Dserver.port=8086 -Dserver.http2.enabled=true",
+          "vmArgs-thisWorksAlso": "-Dserver.port=8086",
+          "vmArgs": "",
+          "env entries below do same thing as above -Dflavor=lemon": "ketchup",
+          "env": {
+              "zzzz-server.http2.enabled": false,
+              "server.port": 8086,
+              "nextlineNote": "input thing is from VSCode extension rioj7.command-variable",
+              "color7": "greenWithSomeBlue",
+              "flavor": "https stuff below. Goes into docker-compose*.yml when using docker",
+            }
+        },
+    ]
+}

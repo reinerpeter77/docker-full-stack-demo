@@ -1,0 +1,11 @@
+
+# THIS GETS RUN ON THE DEVELOPMENT MACHINE WITH A GUI IDE LIKE ECLIPSE
+echo now running bash script: push-remote-rebuild.
+git add .
+git commit -m "from pc script"
+git push
+echo now running remote script on cloud. The location of the key file may need to be adjusted.
+echo It is run from this file, "push-remote-rebuild"
+echo THE FOLLOWING OUTPUT IS FROM THE CLOUD LINUX BOX, RUNNING THE SCRIPT INVOKED FROM HERE
+ssh -i "/c/mywork/awsKeyPair123.pem" ubuntu@xx.xx.xx.xx "cd spboot-nginx-reactjs-compose && ./RestartWebA"
+echo END RUNNING REMOTE

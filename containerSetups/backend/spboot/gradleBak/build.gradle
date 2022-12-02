@@ -1,0 +1,126 @@
+
+// This is build.gradle  
+// When you use gradle you don't need to download many libraries and figure out which library
+// depends on other libraries and download those too, and on and on. Instead you specify the
+// one you want in 'dependencies' and IT finds and downloads those it depends upon.
+// When you need additional libraries (ie:'protein-mapping') from https://mvnrepository.com/ you put
+// a new entry in the "dependencies" section. 
+
+// this file must use version 6.6.1 and this is how to make sure its used by gradlew command:
+// now edit gradle/wrapper/gradle.wrapper.properties and replace
+// version line with
+// distributionUrl=https\://services.gradle.org/distributions/gradle-6.6.1-bin.zip
+// otherwise, misleading and weird errors occur because of wrong version
+
+// SNAFU: To avoid a misleading error message/crash upon startup,
+// be sure if one dependency B listed depends on another dependency A, they are the same version, otherwise
+// gradle automatically loads the dependency of B, loads the other one listed here and
+// when project run freaks out that there are two jar files with the same name and different versions but wont 
+// throw you a bone as to why this happened and where or how to fix it.
+
+// SNAFU: using jdk 11 line below: "applicationDefaultJvmArgs = ['-Dserver.port=80']"
+// gives an error because jdk11 wont allow addresses less than 8000.
+// instead, it gives misleading error message "permission denied"
+// using port 8086 works fine!
+
+plugins {
+	/* org.springframework.boot plugin docs:
+	"The plugin can create executable archives (jar files and war files) that
+	contain all of an application’s dependencies and can then be run with java -jar."
+	This plugin does a whole bunch of mysterious stuff to make things easy.
+	 */
+	id 'org.springframework.boot' version '2.2.2.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+	id 'java'
+    	id 'application'
+}
+
+ext {
+   javaMainClass = "com.example.springboot.Application"
+}
+
+application {
+    // automatically creates task "run"
+    mainClassName = javaMainClass
+    // direct doesnt work: javaMainClass = "com.example.springboot.Application"
+    applicationDefaultJvmArgs = ['-Dserver.port=8086']
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+    // added to get html to show
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	// tag::actuator[]
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	// end::actuator[]
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// tag::tests[]
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	// end::tests[]
+
+	// custom
+	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
+	compile group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.3.7.RELEASE'
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	// NOTE: having the entry below 'com.fasterxml.jackson.dataformat' makes this entry not necessary
+	// because gradle finds dependencies. I left it here in case another project doesnt need it.
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.4'
+	
+	// added to input xml to FruitController. See eatFruitOneObjectX() else http error "application/xml not supported"
+	// WARNING 'jackson-core' & 'jackson-dataformat-xml' MUST SAME VERSION 2.11.1 ELSE SERVER NOT START WITH MISLEADING ERROR MESSAGE!
+	// WARNING 'jackson-core' & 'jackson-dataformat-xml' MUST SAME VERSION 2.11.1 ELSE SERVER NOT START WITH MISLEADING ERROR MESSAGE!
+	// WARNING 'jackson-core' & 'jackson-dataformat-xml' MUST SAME VERSION 2.11.1 ELSE SERVER NOT START WITH MISLEADING ERROR MESSAGE!
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
+	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.4'
+}
+/*
+println("gradlew may not run when switched between ubuntu and pc (using git-bash")
+println("The reason may be that gradle on computer is old version.")
+println("Fix it by running 'gradle wrapper'. This rebuilds gradle/wrapper/gradle-wrapper.properties")
+println("Properties file defines version of gradle to use, but may still show old version, so it may need to be re-copied to have new version")
+println("Ubuntu may need reboot 'sudo reboot' to use modifies properies file")
+*/
+
+//++++++++++++ run java from jar file created above using "application" plugin
+// from baeldung: "The plugin automatically generates a task called run 
+// that only requires us to point it to the main class."
+// 1. add this to plugins section above:   id "application"
+// 2. add lines below. 
+/*
+println("**** to kill server process started here on windows 10:")
+println("open other git-bash and run 'gradle --stop'")
+println("netstat -ano | findstr :8080")
+println("taskkill //F //PID 3416")
+println("")
+println("./gradlew run    ... generated by plugin: ")
+println("                     id 'application'")
+*/
+
+// another way (doesnt work:)
+task run2 {
+     doLast {
+         println 'run task...'
+	 // 
+         //doesnt work: java -jar build/libs/spring-boot-0.0.1-SNAPSHOT.jar
+   }
+}
+//+++++++++ END run ++++++++++++++++++++++++++++++++++
+
+/*
+test {
+	useJUnitPlatform()
+}
+*/

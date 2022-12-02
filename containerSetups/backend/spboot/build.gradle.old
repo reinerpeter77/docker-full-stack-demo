@@ -1,0 +1,96 @@
+
+// This is build.gradle  Gradle is extremely brittle and hard to debug.
+// It was copied from a public spring-boot project and updated by copying from a
+// spring initializr example generated on an online site.
+// When you use gradle you don't need to download many libraries and figure out which library
+// depends on other libraries and download those too, and on and on. Instead you specify the
+// one you want in 'dependencies' and IT finds and downloads those it depends upon.
+// When need libraries (ie:'protein-mapping') from https://mvnrepository.com/ you put
+// a new entry in the "dependencies" section. 
+
+// SNAFU: using jdk 11 line below: "applicationDefaultJvmArgs = ['-Dserver.port=80']"
+// gives a "permission denied" error (!) because jdk11 wont allow addresses less than 8000. using port 8086 works fine!
+
+plugins {
+	/* org.springframework.boot plugin docs:
+	"The plugin can create executable archives (jar files and war files) that
+	contain all of an application’s dependencies and can then be run with java -jar."
+	This plugin does a whole bunch of mysterious stuff to make things easy. */
+	// WARNING V. 2.6.3 NEEDS JVM ARGUMENT:
+	// java -Dspring.main.allow-circular-references=true -Dserver.port=8086 -jar build/libs/spring-boot-0.0.1-SNAPSHOT.jar
+	// TO SEE WHERE THIS NOTATION IS USED, search for "circular" in this project's files [in git use search][in VSCode shift-cntrl-F]
+	id 'org.springframework.boot' version '2.6.3'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+    	id 'application'
+}
+
+ext {
+   applePieIsTasty = "com.example.springboot.Application"
+}
+
+application {
+    // automatically creates task "run"
+    mainClass.set(applePieIsTasty)
+    // sets the server port to 8086 instead of default
+    applicationDefaultJvmArgs = ['-Dserver.port=8086 -Dspring.main.allow-circular-references=true']
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// added to get html to show
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	// tag::actuator[]
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	// end::actuator[]
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// tag::tests[]
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	// end::tests[]
+
+	// custom
+	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
+	implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.6'
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-devtools
+	implementation group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.3.7.RELEASE'
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	// NOTE: having the entry below 'com.fasterxml.jackson.dataformat' makes this entry not necessary
+	////// because gradle finds dependencies. I left it here in case another project doesnt need it.
+	//////implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.4'
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    //implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.6'
+	
+	// added to input xml to FruitController. See eatFruitOneObjectX() else http error "application/xml not supported"
+	// WARNING 'jackson-core' & 'jackson-dataformat-xml' MUST SAME VERSION 2.11.1 ELSE SERVER NOT START WITH MISLEADING ERROR MESSAGE!
+	// WARNING 'jackson-core' & 'jackson-dataformat-xml' MUST SAME VERSION 2.11.1 ELSE SERVER NOT START WITH MISLEADING ERROR MESSAGE!
+	// WARNING 'jackson-core' & 'jackson-dataformat-xml' MUST SAME VERSION 2.11.1 ELSE SERVER NOT START WITH MISLEADING ERROR MESSAGE!
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
+	//implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.12.6'
+}
+
+// another way (doesnt work:)
+task run2 {
+     doLast {
+         println 'run task...'
+	 // 
+         //doesnt work: java -jar build/libs/spring-boot-0.0.1-SNAPSHOT.jar
+   }
+}
+//+++++++++ END run ++++++++++++++++++++++++++++++++++
+
+/*
+test {
+	useJUnitPlatform()
+}
+*/

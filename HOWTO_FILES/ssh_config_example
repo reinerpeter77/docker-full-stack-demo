@@ -1,0 +1,67 @@
+# EXAMPLE ~/.ssh/config FILE. 
+# note: latest edit of the file has not been tested.
+# Backup your original ~/.ssh/config file first before copying this into place and editing it.
+# This file controls:
+# 1) timeout intervals needed to prevent ssh-terminal login to cloud
+#    service to prevent annoying automatic logout after 10 minutes.
+# 2) Management of ssh connections to PRIVATE github repositories.  
+####################
+# How to setup github using ssh "deploy key". Needed to view and push to private repositories.
+# Steps:
+# 1) On client (pc or linux, local or in cloud), add new rsa key for using with github by 
+#    running the following command. (dont specify passcode when prompted): 
+#    ssh-keygen -t rsa 
+#    When asked, specify location/name of keyfile in known place like /remote/id_rsaABC [unix] 
+#    or c:/mySSH_key_folder/id_rsaABC [pc]. In this case /remote is a vmware player shared folder with host, so
+#    keyfile does not end up in linux vm image (undesirable)
+# 2) On github console, goto settings for the repo [or instead setting for the user for 
+#    giving access to ALL repositories], push add deploy key and copy paste 
+#    contents of myGitSSH_Keys.pub into github console when asked. Be sure to use 
+#    the .pub file, with is the public of the pair of files. This tells the github repo 
+#    to trust the holder of the PRIVATE key to which this PUBLIC key is paired.
+# 3) On client, start ssh by run -> eval "$(ssh-agent -s)" and
+#    Then run ssh-add /mySSH_key_folder/id_rsaABC which enables the key for the current
+#    login only. To make it permanent, add entries below.
+#####################
+  
+# SSH TIMEOUT FIX (not related to github)
+# SNAFU: if this file is not readable, the timeout thing won't work!
+# fix with this unix command:      chmod 744 ~/.ssh/config
+Host *
+     ServerAliveInterval 60
+     ServerAliveCountMax 2
+     
+##### github #####
+
+# use this for when "github deploy key" is set for a whole user, not just a repository
+# if done this way, the other examples are NOT NECESSARY
+Host github.com  
+	Hostname github.com  
+	User git  
+	IdentityFile /mySSH_key_folder/id_rsaABC 
+# example commmand: git clone git@github.com:my_git_id/gitTestA.git
+
+# use this for when "github deploy key" is set for a specific repository. Note: each
+#   repository must have a unique key; they cannot be shared between repositories.
+# Note the substitution of "host_rsaABC" for "github.com" in the url when 
+# running a git command locally
+Host host_rsaABC
+	Hostname github.com
+	User git
+	IdentityFile /mySSH_key_folder/id_rsaABC
+# example commmand: git clone git@host_rsaABC:my_git_id/gitTestA.git
+
+# another example for another repository	
+Host host_rsaZZZ
+	Hostname github.com
+	User git
+	IdentityFile /mySSH_key_folder/id_rsaZZZ
+	# [on pc git-bash] IdentityFile /c/mySSH_key_folder/id_rsaZZZ
+
+# trash
+# Not tested: Or, on machine being connected to, edit 
+# file -> /etc/ssh/sshd_config & add/uncomment these lines ???	
+#      ClientAliveInterval 1200
+#      ClientAliveCountMax 3
+
+

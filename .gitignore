@@ -1,0 +1,59 @@
+
+
+# after removing an entry from this file, must remove local cache with "git rm -r --cached ."
+# "git rm -r --cached ."
+# "git rm -r --cached ."
+# "git rm -r --cached ."
+# "git rm -r --cached ."
+# "git rm -r --cached ."
+# "git rm -r --cached ."
+# or else it will still get saved & updated
+*.log
+# keystore file:
+*.p12
+# backup file:
+*.bk*
+# .idea is the intellij folder containing project editor state, setting which dont belong in git
+*.idea/
+# config files used by eclipse dont belong in git
+.settings/ 
+.project/
+workspace.xml
+# config files for visual studio code. At least they name the folder so you know what it is
+# .vscode/
+# dont save anything gradle except build.gradle, the file for the project. Other files are for running gradle.
+# excludes .gradle folder having gradle setup and code.
+.gradle/
+# exclude anything in any build folder in any location, but keep build folder using .gitkeep
+*/build/**
+build
+# file holding docker or devel box or any other secret. Exclude it!
+*/secrets/**
+# this may be for secrets at level where git push is run?
+secrets/**
+
+# files specific to project having url's etc not wanted in git.
+# this folder contains a file .gitkeep which prevents git from excluding an empty folder (by default)
+IgnoredByGit/**
+# exclude files used by mysql because takes lots of space.
+# If data needed, use phpmyadmin to export to a file.
+*mySqlWorkDir/**
+mySqlWorkDir
+mySqlWorkDir*
+mySqlWorkDir.*
+# how to remove committed files from accidental commit of spboot/build folder:
+# git rm -r --cached spboot/build
+# snap is a linux install thing
+snap
+snap*
+# below are entries from front end (npm, reactjs, nginx)
+# node modules takes up lots of space and gets rebuilt from .json file
+node_modules
+# node_modules.bk1 etc etc
+node_modules*
+.npm
+.npm*
+npm
+npm*
+.package-lock.json
+

@@ -1,0 +1,241 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+  <!-- THIS IS IN RESOURCES/TEMPLATES BECAUSE IT GETS ROUTED TO BY
+  CONTROLLERB.JAVA. IF DIRECT URL, WOULD BE UNDER JAVA/RESOURCES INSTEAD -->
+<head> 
+    <title>this is javascriptWebApiSimpleClient.html</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- <script src="https://ajax.googlea   zzzzz   pis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+</head>
+<br/><br/>
+
+<body>
+<style> 
+
+html, .zz { font-family: 'Noto Sans', sans-serif; font-size: 14pt; color: #3d3d00; background-color: #f4fad3; }
+        .zz { border-radius: 10px; padding: 5px; margin:10px; border-style: solid; border-width: 2px; border-color: blueviolet; } 
+</style>
+<!-- color and # means red-green-blue ie: ff0000 is red, 00ff00 is green 004400 dark green etc. 
+     its hexadecimal so its 0 through f, not 0 through 9 as in base 10
+     In visual studio, click on the color swatch and adjust it visually -->
+<div id="enclosingButtons" style="display: inline-grid;">
+<div onClick="runAjaxGetTextA();" class="zz" >json array in modified array out as text</div>
+<div onClick="runAjaxGetTextB();" class="zz">json array in modified single obj out, indexed by REST arg as text</div>
+<div onClick="runAjaxGetJSON_A();" class="zz">xml in modified single json obj out, indexed by REST arg as JSON</div>
+<div onClick="runAjaxGetXML_A();" class="zz">xml in xml out as XML</div>
+</div>
+
+<i style="color:red;">Open browser's debug console to view output!</i><br/>
+this is javascriptWebApiSimpleClient.html<br/>
+located at.. containerSetups/backend/spboot/src/main/resources/public<br/>
+Accessed by <code>@GetMapping("/")</code> within ControllerB.java,<br/>
+It demonstrates javascript to make web service calls to the spring-boot server.<br/>
+This page is served by the spring-boot server for the purpose of testing
+spring-boot, but this project uses a react.js served by another docker container for
+all else.<br/>
+Click on the buttons below to invoke an ajax call.
+Results appear in the browser's javascript debug console.
+In chrome, get this console by right-clicking -> inspect, then click on
+"console" tab<br/><br/>
+This page is a basic coding example. It uses the jquery javascript library to only make the 
+ajax call because it's cleaner than not using jquery. <br/>
+The following page does the same as this but is better, however it is NOT a clean ajax example
+and has lots of support javascript, DOM and jquery calls.<br/>
+More complex example: <a href="/" style="font-size: 18pt;">javascriptWebApiClient</a>
+<br/><br/>
+
+<script>
+
+function webSocketConnectNtest() {
+  webSocketConnect();
+  audioCon = new AudioContext()
+  console.log(audioCon)
+  // fails if called immediately... sendData();
+}
+
+function runAjaxGetTextA() {
+    url = location.protocol + "//" + location.host + "/" + 'eatFruitArrayOutputArray'; 
+    //             ^^^^^^^^ http: or https:   ^^^^ localhost:8086 or 123.456.78.9:8086 
+    console.log("runAjaxGetTextA accessing: " + url)
+    jsonObjectA = [{"flavor": "apple", "color":"redAndGreen"}, {"flavor": "banana", "color":"yellow"}];
+    reqData = JSON.stringify(jsonObjectA)
+    console.log('flavor: ' + jsonObjectA[1].flavor)
+    outstr = "url: " + url + "\nPOST data:" + reqData;
+
+    /*  NOT NEEDED
+    to sidestep self-signed ssl certificate error using fetch() from browser javascript:
+    const https = require("https");
+
+    const options = {
+      agent: new https.Agent({
+        rejectUnauthorized: false
+      })
+    };
+    */
+    fetch(url, {
+        method: 'POST', headers: {'Content-Type': 'application/json' }, body: reqData
+      })
+      .then(response => response) // does nothing, but demonstrates how this returns new value to next step
+      .then(gotToPassToNext => { console.log("response.headers.get('content-type'): " + 
+                  gotToPassToNext.headers.get('content-type')); return gotToPassToNext;})
+      .then(response => response.text()) // EATS all input stream, returns text to next promise
+      .then((responseText) => { 
+        console.log("text: " + responseText); 
+        jsonObj = JSON.parse(responseText)
+        console.log("JSON: " + JSON.stringify(jsonObj) + " color " + jsonObj[1].color)
+        return responseText; 
+      })
+      // shortcut for parsing json from response body and returning it to the next in chain
+      // response.text() already ATE response so this wont work->   
+      //.then(response => response.json()) 
+      //.then(jsonObjectNow => console.log("json data: " + jsonObjectNow.flavor))
+      .catch((error) => {
+        console.error('Error:', error);
+        alert("Error. may be error using javascript fetch() in HTML file to HTTPS server.")
+      });
+    
+/*  this works too, but fetch is preferable.
+    $.ajax(url, { // this uses jquery. It is gotten above using "<script src="https://ajax.googleapis..."
+      data: reqData,
+      method: "POST",
+      contentType: "application/json",
+      success:function(data, status, headers) {
+            outstr += "RESPONSE HEADERS: " + headers.getAllResponseHeaders() + "\n";
+            outstr += "<br/>JSON array returned from service: <br/>" + JSON.stringify(data)
+            console.log(outstr)
+      },
+      error: function(data) {
+        console.log(outstr + " error: " + data.responseText);
+      }
+    });
+    */
+} 
+
+function runAjaxGetTextB() {
+    url = location.protocol + "//" + location.host + "/" + 'eatFruitArrayOutputOneIndexed/1'; 
+    //             ^^^^^^^^ http: or https:   ^^^^ localhost:8086 or 123.456.78.9:8086 
+    console.log("runAjaxGetTextB accessing: " + url)
+    jsonObjectA = [{"flavor": "apple", "color":"redAndGreen"}, {"flavor": "banana", "color":"yellow"}];
+    reqData = JSON.stringify(jsonObjectA)
+    console.log('flavor: ' + jsonObjectA[1].flavor)
+    outstr = "url: " + url + "\nPOST data:" + reqData;
+    fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: reqData
+      })
+      .then(response => response) // does nothing, but demonstrates how this returns new value to next step
+      .then(gotToPassToNext => { console.log("response.headers.get('content-type'): " + 
+                  gotToPassToNext.headers.get('content-type')); return gotToPassToNext;})
+      .then(response => response.text()) // EATS all input stream, returns text to next promise
+      .then((responseText) => { 
+        console.log("text: " + responseText); 
+        jsonObj = JSON.parse(responseText)
+        console.log("JSON: " + JSON.stringify(jsonObj) + " color " + jsonObj.color)
+        return responseText; 
+      })
+      // shortcut for parsing json from response body and returning it to the next in chain
+      // response.text() already ATE response so this wont work->   
+      //.then(response => response.json()) 
+      //.then(jsonObjectNow => console.log("json data: " + jsonObjectNow.flavor))
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+    /*
+    $.ajax(url, { // this uses jquery. It is gotten above using "<script src="https://ajax.googleapis..."
+      data: reqData,
+      method: "POST",
+      contentType: "application/json",
+      success:function(data, status, headers) {
+            outstr += "RESPONSE HEADERS: " + headers.getAllResponseHeaders() + "\n";
+            outstr += "<br/>JSON array returned from service: <br/>" + JSON.stringify(data)
+            console.log(outstr)
+      },
+      error: function(data) {
+        console.log(outstr + " error: " + data.responseText);
+      }
+    });
+    */
+} 
+
+function runAjaxGetJSON_A() {
+    url = location.protocol + "//" + location.host + "/" + 'eatFruitArrayOutputOneIndexed/1'; 
+    //             ^^^^^^^^ http: or https:   ^^^^ localhost:8086 or 123.456.78.9:8086 
+    console.log("runAjaxGetJSON_A accessing : " + url)
+    xmlString = '<basket><fruit><color>red-xml-data</color><flavor>cherries</flavor></fruit><fruit><color>green</color><flavor>apple</flavor></fruit></basket>';
+    // for demo purposes make an object, access it but make it back into a string
+    // for sending to the web service
+    xmlObject = new DOMParser().parseFromString(xmlString, "text/xml")
+    console.log('flavor: ' + xmlObject.all[1].children[1].textContent)
+    outstr = "url: " + url + "\nPOST data:" + new XMLSerializer().serializeToString(xmlObject);
+    fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/xml' }, 
+        body: new XMLSerializer().serializeToString(xmlObject)
+      })
+      .then(gotToPassToNext => { console.log("response.headers.get('content-type'): " + 
+                  gotToPassToNext.headers.get('content-type')); return gotToPassToNext;})
+      .then(response => response.json()) // shortcut for parsing json from response body and returning it to the next in chain
+      .then(jsonObjectNow => console.log("json data: " + jsonObjectNow.flavor +
+           "\nwhole object: " + JSON.stringify(jsonObjectNow)))
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+      /*
+    $.ajax(url, { // this uses jquery. It is gotten above using "<script src="https://ajax.googleapis..."
+      data: new XMLSerializer().serializeToString(xmlObject),
+      method: "POST",
+      contentType: "application/xml",  // DIFFERENT THAN OTHER EXAMPLE!
+      success:function(data, status, headers) {
+            outstr += "RESPONSE HEADERS: " + headers.getAllResponseHeaders() + "\n";
+            outstr += "<br/>JSON array returned from service: <br/>" + JSON.stringify(data)
+            console.log(outstr)
+      },
+      error: function(data) {
+        console.log(outstr + " error: " + data.responseText);
+      }
+    });
+    */
+} 
+
+function runAjaxGetXML_A() {
+    url = location.protocol + "//" + location.host + "/" + 'eatFruitArrayOutputArrayInXML'; 
+    //             ^^^^^^^^ http: or https:   ^^^^ localhost:8086 or 123.456.78.9:8086 
+    console.log("runAjaxGetXML_A accessing: " + url)
+    xmlString = '<basket><fruit><color>red-xml-data</color><flavor>cherries</flavor></fruit><fruit><color>green</color><flavor>apple</flavor></fruit></basket>';
+    // for demo purposes make an object, access it but make it back into a string
+    // for sending to the web service
+    xmlObject = new DOMParser().parseFromString(xmlString, "text/xml")
+    console.log('flavor: ' + xmlObject.all[1].children[1].textContent)
+    outstr = "url: " + url + "\nPOST data:" + new XMLSerializer().serializeToString(xmlObject);
+    fetch(url, {
+        method: 'POST', headers: { 'Content-Type': 'application/xml' }, 
+        body: new XMLSerializer().serializeToString(xmlObject)
+      }) // NOTE: promises in the chain CHANGE "response" into different types
+      .then(gotToPassToNext => { console.log("response.headers.get('content-type'): " + 
+                  gotToPassToNext.headers.get('content-type')); return gotToPassToNext;})
+      // fetch doesn't have a quick xml parse as it does for JSON, so to this:
+      .then(response => response.text()) // EATS all input stream, returns text to next promise
+      .then(response => new DOMParser().parseFromString(response, "application/xml"))
+      .then(xmlObjectNow => {
+            console.log("xml flavor : " + xmlObjectNow.getElementsByTagName("flavor")[0].textContent +
+               "\nwhole object: " + new XMLSerializer().serializeToString(xmlObjectNow))
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+      /* $.ajax(url, { // this uses jquery. It is gotten above using "<script src="https://ajax.googleapis..."
+      data: new XMLSerializer().serializeToString(xmlObject),
+      method: "POST",
+      contentType: "application/xml",  // DIFFERENT THAN OTHER EXAMPLE!
+      success:function(data, status, headers) {
+            outstr += "RESPONSE HEADERS: " + headers.getAllResponseHeaders() + "\n";
+            outstr += "<br/>XML returned from service: <br/>" + new XMLSerializer().serializeToString(data)
+            console.log(outstr)
+      },
+      error: function(data) {
+        console.log(outstr + " error: " + data.responseText);
+      }
+    }); */
+} 
+</script>
+
+</body>
+</html>

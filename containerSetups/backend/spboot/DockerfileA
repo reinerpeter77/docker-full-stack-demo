@@ -1,0 +1,39 @@
+# THIS FILE DERIVED FROM EXAMPLE AT SPRINGBOOT WEBSITE:
+# https://spring.io/guides/gs/spring-boot-docker/
+# WARNING: this dockerfile assumed "./gradlew build" has been run to generate jar file below.
+# TODO: convert to multi-stage dockerfile which builds jar in one vm, copies
+#   jar to working vm and throws away first vm (having javac, gradle etc). eh, why?
+# "FROM" downloads a prebuilt vm which is starting point for new container. Always specify a version so future revs wont break code.
+# FROM openjdk:8-jdk-alpine    ### feb 2022 changed to jdk11...   
+# got below from https://hub.docker.com/r/adoptopenjdk/openjdk11/tags?page=1&ordering=-name&name=alpine   ... not so sure what I'm doing but it works. Important that it's not "latest" so it won't break in a future deploy.
+FROM adoptopenjdk/openjdk11:jdk-11.0.10_9-alpine-slim
+# above gives version feb2022-> openjdk version "11.0.10" 2021-01-19 | OpenJDK Runtime Environment AdoptOpenJDK (build 11.0.10+9) | OpenJDK 64-Bit Server VM AdoptOpenJDK (build 11.0.10+9, mixed mode)
+# in CONTAINER, NOT DOCKER HOST run linux commands to add group and user to the new vm created above
+# they recommend making a non-root user to run the code.
+# syntax:  -G Group  ...   -S Create a system user
+RUN addgroup -S springgroup && adduser -S springuser -G springgroup
+# this code uses a logfile. The code not have permission to create
+# the logfile so do it here and chown to the user.
+# later, read it:  sudo docker exec -it mycontainerName cat accesslog.txt
+RUN touch accesslog.txt && chown springuser accesslog.txt && mkdir public && chown springuser public
+# use user id springuser in group springgroup as setup above
+USER springuser:springgroup
+# Now setup the spring-boot all-in-one-jar file. 
+# "spring-boot" part of jar name set in settings.gradle, not build.gradle !!
+# "spring-boot" part of jar name set in settings.gradle, not build.gradle !!
+# "spring-boot" part of jar name set in settings.gradle, not build.gradle !!
+# "spring-boot" part of jar name set in settings.gradle, not build.gradle !!
+ARG HOST_JAR_FILE=build/libs/spring-boot-0.0.1-SNAPSHOT.jar
+# copy jar file from HOST to the container and rename it. Assumes "./gradlew build" has been run.
+COPY ${HOST_JAR_FILE} testApp.jar
+# latest springboot has a problem with circular references. I fixed code but left this for reference
+# all of the below work ok. Save for reference
+### ENTRYPOINT ["java", "-Dserver.port=8081", "-Dspring.main.allow-circular-references=true", "-jar","testApp.jar"]
+## ENTRYPOINT echo "from dockerfile java version is: ";  java -version; java -Dserver.port=8081 -jar testApp.jar
+ENTRYPOINT echo "from dockerfile java version is: ";  java -version; java -jar testApp.jar
+# below is example from other dockerfile
+# ENTRYPOINT echo "from dockerfile: npm run-script start-with-port-3001"; npm run-script start-with-port-3001              # this works ok also
+# ENTRYPOINT ["java", "-jar","testApp.jar"]
+
+
+

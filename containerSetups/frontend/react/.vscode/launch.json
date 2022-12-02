@@ -1,0 +1,83 @@
+{
+    // This file is used by visual studio to call commands defined in package.json
+    // things like port number, ssl setting or start browser are controlled by environment
+    // variables.
+    // Environment variables can be set 2 ways: by this file, which calls a script in
+    // package.json, or by this file calling a script in package.json which sets up
+    // enviroment variables itself.
+    // Difference between PC vs UNIX: syntax of environment variable is same if setup
+    //    in this file, but DIFFERS if setup in package.json
+    // WARNING: delete .eslintcache if weird errors occur describing syntax errors!
+
+    "version": "0.2.0",
+    "configurations": [
+        // to read the same .env file for environment vars which dockerfile uses, install
+        // VSCode extension "rioj7.command-variable". Use as .. "color7": "${input:color7}",
+        // look at spring-boot project to see how its used.
+        {
+            // this one sets up environment vars in this file 
+            // before calling package.json script "startA"
+            "name": "http 3008", 
+            "command": "npm run-script startA", 
+            "request": "launch", "type": "node-terminal", "webRoot": "${workspaceFolder}",
+            // PORT env below has same effect as command line "PORT=3005 npm start" or "PORT=3005 npm run-script start"
+            // WARNING: custom env var is IGNORED if not starts with "REACT_APP_"
+            "env": { "PORT": "3008", "BROWSER": "none", "REACT_APP_flavor2": "peppermint2"}
+        },
+        {
+            // "this one just starts browser and does not have a command"
+            "name": "startup chrome for debugging using vscode",
+            "type": "pwa-chrome",
+            "request": "launch",
+            "url": "http://localhost:3001",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            // this one sets up environment vars in this file before calling package.json script
+            // ssl/https is setup by these environment variables
+            "name": "https 3008", "command": "npm run-script startPC", 
+            "request": "launch", "type": "node-terminal",
+            // PORT env below has same effect as command line "PORT=3005 npm start" or "PORT=3005 npm run-script start"
+            "env": {
+                "HTTPS": "true",  // react has its own certificate builtin. need https for sound web api.
+                "PORT": "3008", "BROWSER": "none",
+                // WARNING: custom env var is IGNORED if not starts with "REACT_APP_"
+                "REACT_APP_flavor2": "peppermint2",
+                // doesnt like p12 "SSL_CRT_FILE": "${workspaceFolder}/secrets/fsddkey.p12",
+                // "SSL_KEY_FILE": "${workspaceFolder}/secrets/fsddkey.keyfile",
+                // "SSL_KEY_FILE": "${workspaceFolder}/../../../secrets/dockerEnvFile.env",
+              },
+              "webRoot": "${workspaceFolder}"
+        },
+        {
+            // FOR LINUX: this one does not setup env vars instead it calls a package.json script which
+            // sets up vars instead
+            "name": "start3008PC",
+            "command": "npm run-script start3008PC",
+            "request": "launch",
+            "type": "node-terminal",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            // FOR PC: this one does not setup env vars instead it calls a package.json script which
+            // sets up vars instead
+            "name": "start3008Nix",
+            "command": "npm run-script start3008Nix",
+            "request": "launch",
+            "type": "node-terminal",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "name": "npm install",
+            "command": "npm install",
+            "request": "launch",
+            "type": "node-terminal"
+        },
+        {
+            "name": "build-runnable-creates-build-folder",
+            "command": "npm build-runnable-creates-build-folder",
+            "request": "launch",
+            "type": "node-terminal"
+        }
+    ]
+}

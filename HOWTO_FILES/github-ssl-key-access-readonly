@@ -1,0 +1,21 @@
+### To setup read-only git clone using deploy key without github account:   
+[github collaborate will not give read-only access, so do that this way:]  
+on windows pc:  
+```
+# this generates your own ssh key
+# When asked, specify "./id_rsa123" as keyfile location. No password.
+ssh-keygen -t rsa   
+# Ask repo owner to setup above id_rsa123.pub file contents as a read-only 
+# deploy key for the repo. This is done by leaving the "write permission" 
+# box empty when adding deploy key
+# Then on pc you run these [you need to run these at every login. See other  
+# part of this doc to make it permanent]:    
+# eval starts up the ssh agent. ssh-add tells it to eat your ssh key. 
+# git clone works via the ssh agent to authenticate you to the github repo  
+eval "$(ssh-agent -s)"  
+ssh-add  ./id_rsa123
+git clone git@github.com:txtjqm/full-stack-docr.git   
+# if done right, below push will fail.   
+# git add .;  git commit -m 'read only user test';git push;
+```
+----------

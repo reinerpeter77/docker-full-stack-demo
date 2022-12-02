@@ -1,0 +1,262 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title>this is webAudioTestA.html</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- <script src="https://ajax.googlea   zzzzz   pis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+    <!-- <script src="white-noise-processor.js"></script>  -->
+  </head>
+<br/><br/>
+
+<body>
+<b>located at containerSetups/backend/spboot/src/main/resources/public/webAudioApiTest/webAudioTestA.html<br/>
+all html and js files served unaltered by spring boot because its a "resource"</b><br/>
+<style> 
+html, .zz { font-family: 'Noto Sans', sans-serif; font-size: 12pt; color: #3d3d00; background-color: #f4fad3; }
+        .zz { border-radius: 10px; padding: 5px; margin:10px; border-style: solid; border-width: 2px; border-color: blueviolet; } 
+</style>
+<script>
+  if (navigator.userAgent.indexOf("Chrome") == -1) {
+       alert("modules import/export wont work for firefox but works from chrome..")
+  }
+</script>
+<script type="module">
+  // equivalent of *.js file or nodejs: "import { color } from "./sndHelperA.js";". Fails on firefox
+  // cannot import from the AudioWorkletProcessor. It breaks things!... import { flavor, STOPNOW } from "./WorkletChunks.js"; 
+  // import { STOPNOW } from "./sndHelperA.js"; 
+  import { color, sndHelper, STOPNOW } from "./sndHelperA.js";
+  console.log("STOPNOW.......: " + STOPNOW);
+  // WARNING: this variable won't be defined until page loads! Access it only for onClick() etc..
+  window.STOPNOW = STOPNOW // pass variable outside module into page.
+</script>
+<!-- color and # means red-green-blue ie: ff0000 is red, 00ff00 is green 004400 dark green etc. 
+     its hexadecimal so its 0 through f, not 0 through 9 as in base 10
+     In visual studio, click on the color swatch and adjust it visually -->
+<div id="enclosingButtons" style="display: inline-grid;">
+  
+  <div style="display: inline-grid; grid-template-columns: 1fr 1fr 1fr;">
+    <!-- run, giving js filename and worklet class as args -->
+    <div onClick="runAudioWorkletNode('SineAudWorkletProc2', 'AudWorkletProcsA.js')" class="zz" >
+      runAudioWorkletNode</div>
+    <!-- above using WorkletChunks.js (uses port) -->
+    <div onClick="runAudioWorkletNode('WorkletChunks', 'WorkletChunks.js')" class="zz" >
+      WorkletChunks</div>
+    <!-- hardcoded demo function -->
+    <!-- <div onClick="sndTestUsingAudioWorkletNode();" class="zz" >sndTestUsingAudioWorkletNode</div> -->
+    <!-- non worklet version. loops but has gaps in play -->
+    <div onClick="sndTestNoWorklet();" class="zz" >sndTestNoWorklet</div>
+  </div>
+  <div style="display: inline-grid; grid-template-columns: 1fr; text-align: center;">
+      <div onClick="console.log('stop'); stopWorklet();"
+           class="zz" >stop worklet</div>
+      <!-- <div onClick="function bb() { console.log('stop'); stopWorklet(); }; bb();"
+           class="zz" >stop worklet</div> -->
+  </div>
+  
+</div>
+
+<i style="color:red;">Open browser's debug console to view output!</i><br/>
+this is webAudioTestA.html<br/>
+located at containerSetups/backend/spboot/src/main/java/resources<br/>
+spring-boot presents this as-is html file, as well as js and image files in this folder
+<br/>
+
+<script>
+  // fails because module not yet loaded....  console.log("STOPNOW..222..: " + STOPNOW)
+  //import { color } from "./sndHelperA.js";
+  // console.log("color " + color);
+//////////// sound ////////////
+// https://ssl11.pair.com/bbamont/samples/samples.html
+// problem: on dell laptop, sound not stereo using headphones.
+//          using bluetooth headphones, stereo ok
+//          disabled service "waves audio service" but no change.
+
+/**
+ * simple demo of stereo audio worklet. Has file/worklet names hardcoded
+ */
+var audioWorkletNodeA
+// nope, wont work. Do in <script> tag as above....    import { STOPNOW } from "./sndHelperA.js"; 
+
+  
+  function stopWorklet() {
+    // todo: if user hits button many times, many worklets!
+    audioWorkletNodeA.port.postMessage(STOPNOW)
+}
+function callBackA() {
+    console.log("this is callBackA");
+}
+
+/**
+ * run audio worklet, specified by worklet name and source filename.
+ */
+function runAudioWorkletNode(audioWorkletName, workletJSfilename) {
+  console.log("module now loaded... STOPNOW..: " + STOPNOW + 
+     "\nrunAudioWorkletNode() workletJSfilename: " + workletJSfilename); 
+  const audioContext = new AudioContext({ latencyHint: 'interactive', sampleRate: 44100 }); 
+  // console.log("audioWorkletName: " + audioWorkletName + " in file: " + workletJSfilename)
+  // console.log("audioContext.destination numberOfOutputs (1 stereo output has 2-channels) " + audioContext.destination.numberOfOutputs); 
+  // console.log("audioContext.destination channelct: " + audioContext.destination.channelCount); 
+  // 'then' is part of the 'promise' mechanism. addModule() returns a promise which
+  // means it takes a while in background but returns immediately so it wont hold up
+  // the gui thread. After it finishes its setup sometime later, the 'then' thing gets called to
+  // proceed with things. The 'then' thing is a function because it belongs to the
+  // object generated by addModule and must be tied to it.
+  audioContext.audioWorklet.addModule(workletJSfilename).then(zznz =>  { 
+        // reference: https://developer.mozilla.org/en-US/docs/Web/API/AudioWorkletNode/AudioWorkletNode
+        // use 'outputChannelCount' to set 2 channels (stereo) for OUTPUT of worklet node.
+        // dont confuse {outputChannelCount: [2]} with { numberOfOutputs: 2 }
+        // '[2]'' says output #0 has 2 output channels (stereo). '[2][4]'' says output 1 has 4 channels (quadrophonic)
+        // STOPNOW is sharing command with local file and remote worklet. I really just want to declare it in
+        //    the worklet and import it here but cant figure out how to do it.
+        jsonOpts = { outputChannelCount: [2], numberOfInputs:0, 
+                     processorOptions:{ drink:'iced tea', pizza:'mushroom and onions thin crust'}  }
+        audioWorkletNodeA = new AudioWorkletNode(audioContext, audioWorkletName, jsonOpts);
+        //                               setup stereo OUTPUT of AudioWorkletNode ^^^
+        // audioWorkletNodeA.addEventListener(jkadsfklldf)
+        // now setup the port thing connecting dom to worklet
+        // https://developer.mozilla.org/en-US/docs/Web/API/AudioWorkletNode/port#examples
+        // setInterval(() => audioWorkletNodeA.port.postMessage('ping'), 2000)
+        audioWorkletNodeA.port.postMessage('ping'); 
+        audioWorkletNodeA.port.onmessage = (e) => 
+            console.log("I got message for worklet.. port.. " + e.data)
+
+        // now wire up above stereo AudioWorkletNode to the speakers of computer
+        audioWorkletNodeA.connect(audioContext.destination, 0, 0)
+    })
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+const REAL_TIME_FREQUENCY = 440; 
+const ANGULAR_FREQUENCY = REAL_TIME_FREQUENCY * 2 * Math.PI;
+const SAMPLEPERSEC = 44100;
+const DURATION = 0.5; // in seconds
+
+function sndTestNoWorklet() {
+  console.log("fff..oo. " + ANGULAR_FREQUENCY * 1.5)
+  let audioContext = new AudioContext({ numberOfInputs: 2 });
+  let myBuffer = audioContext.createBuffer(2, SAMPLEPERSEC * DURATION * 2, SAMPLEPERSEC);
+  var dataLeft = new Float32Array(SAMPLEPERSEC * DURATION);
+  var dataRight = new Float32Array(SAMPLEPERSEC * DURATION);
+  //let dataLeft = myBuffer.getChannelData(0);  //let dataRight = myBuffer.getChannelData(1);
+  for (let sampleNumber = 0 ; sampleNumber < SAMPLEPERSEC * DURATION * 2 ; sampleNumber += 1) {
+    dataLeft[sampleNumber] = generateSample(sampleNumber, ANGULAR_FREQUENCY);
+    dataRight[sampleNumber] = generateSample(sampleNumber, ANGULAR_FREQUENCY * 1.5);
+  }
+  playIt(audioContext, myBuffer, dataLeft,  dataRight); 
+}
+
+function playIt(audioContextA, buffA, dataLeftA, dataRightA) {
+  buffA.copyToChannel(dataLeftA,0,0);
+  buffA.copyToChannel(dataRightA,1,1);
+  let buffSrcA = audioContextA.createBufferSource();  // I'm a AudioBufferSourceNode
+  buffSrcA.buffer = buffA;
+  buffSrcA.connect(audioContextA.destination);
+  buffSrcA.addEventListener('ended', () => {
+      playIt(audioContextA, buffA, dataLeftA, dataRightA)
+    })
+  buffSrcA.start();
+}
+
+function generateSample(sampleNumber, angFreq) {
+  let sampleTime = sampleNumber / 44100;
+  let sampleAngle = sampleTime * angFreq;
+  return Math.sin(sampleAngle);
+}
+
+//////////////  sound ///////////////////
+
+function webSocketConnectNtest() {
+  webSocketConnect();
+  audioCon = new AudioContext()
+  console.log(audioCon)
+  // fails if called immediately... sendData();
+}
+
+/// websocket testing ... ////////////////////////////////////////////////////
+var webSocketSoundData;
+function webSocketSoundDataConnect() {
+    webSocketSoundData = new WebSocket('ws://' + location.host + '/binarySound'); 
+    webSocketSoundData.binaryType = "blob";
+    webSocketSoundData.onopen = function () { 
+        webSocketSoundData.send(new Blob([new Uint8Array([0x48]).buffer]));    
+    }
+    webSocketSoundData.onmessage = function(msg) { 
+        if (msg.data instanceof Blob) { 
+
+        }
+    }
+    webSocketSoundData.onerror = function (error) {
+      console.log("webSocketSoundData.onerror ethwthwt")
+    }
+    webSocketSoundData.onclose = function () {
+      console.log("webSocketSoundData.onclose qrgqrgqrg")
+    } 
+  }
+  ////////////////////////
+
+var webSocketA;
+function webSocketConnect() {
+	webSocketA = new WebSocket('ws://' + location.host + '/websockA');
+  // now setup "lifecycle messages" for the WebSocket. onmessage() is REPETITIVE
+	webSocketA.onmessage = function(data) {
+		console.log("from socket...: " + data.data);
+	}
+  webSocketA.onopen = function() { // callback for when handshake done & socket is ready to go
+    console.log("onopen event")
+    // now that it's ready, do something
+    webSocketSendTestData();
+  }
+  webSocketA.onclose = function() { 
+    console.log("onclose event bye bye websocket")
+  }
+}
+
+sessionID = 100;
+function webSocketSendTestData() {
+	var data = JSON.stringify({
+		'user' : 'testuser',
+    'sessionID' : sessionID++
+	})
+  if (!webSocketA) { console.log('webSocketA not yet new()\'ed'); return; }
+	webSocketA.send(data);
+}
+
+//// websocket binary ////////////////////////////////////////////
+// https://medium.com/swlh/websockets-with-spring-part-1-http-and-websocket-36c69df1c2ee
+var webSocketBinary;
+function webSocketBinaryConnect() {
+    webSocketBinary = new WebSocket('ws://' + location.host + '/websockBinaryB'); 
+    webSocketBinary.binaryType = "blob";
+    webSocketBinary.onopen = function () { 
+        // send binary messages
+        webSocketBinary.send(new Blob([new Uint8Array([0x48, 0x48,0x48,0x65, 0x6c, 0x6c, 0x6f, 0x21]).buffer]));     // send text messages
+        //webSocketBinary.send("Hello!"); 
+    }
+    webSocketBinary.onmessage = function(msg) { 
+        if (msg.data instanceof Blob) { 
+            //console.log("got blob " + msg.text)
+            // msg.data.text().then(res => console.log("string: " + res));
+            msg.data.text().then(zzz => { 
+                console.log("zzz " + zzz); 
+                return zzz;
+            })
+        } else {
+            console.log("got text " + msg.data())
+        }
+    }
+    webSocketBinary.onerror = function (error) {
+      console.log("webSocketBinary.onerror ethwthwt")
+    }
+    webSocketBinary.onclose = function () {
+      console.log("webSocketBinary.onclose qrgqrgqrg")
+    } 
+  }
+///////////////////////////////////////////////////////
+
+</script>
+
+</body>
+</html>
+

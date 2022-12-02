@@ -1,0 +1,205 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head> 
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- <script src="https://ajax.googlea   zzzzz   pis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
+</head>
+<br/><br/>
+
+<body>
+<style> 
+
+html, .zz { font-family: 'Noto Sans', sans-serif; font-size: 14pt; color: #3d3d00; background-color: #f4fad3; }
+        .zz { border-radius: 10px; padding: 5px; margin:10px; border-style: solid; border-width: 2px; border-color: blueviolet; } 
+</style>
+<!-- color and # means red-green-blue ie: ff0000 is red, 00ff00 is green 004400 dark green etc. 
+     its hexadecimal so its 0 through f, not 0 through 9 as in base 10
+     In visual studio, click on the color swatch and adjust it visually -->
+<div id="enclosingButtons" style="display: inline-grid;">
+  <div style="display: inline-grid; grid-template-columns: 1fr 1fr;">
+    <div onClick="webSocketConnectNtest();" class="zz" >runWebSocketClientA</div>
+    <div onClick="webSocketSendTestData();" class="zz" >webSocketSendTestData</div>
+  </div>
+  <div style="display: inline-grid; grid-template-columns: 1fr 1fr;">
+    <div onClick="webSocketBinaryConnect();" class="zz" >webSocketBinaryConnect</div>
+    <div onClick="webSocketBinaryConnect();" class="zz" >webSocketBinaryConnect</div>
+  </div>
+  <div onClick="sndTest1();" class="zz" >sndTest1</div>
+<!-- <div onClick="runAjaxGetTextA();" class="zz" >json array in modified array out as text</div> -->
+</div>
+
+<i style="color:red;">Open browser's debug console to view output!</i><br/>
+this is src/main/resources/public/javascriptWebSocketClientA.html<br/>
+Accessed direct url, not springboot mapping<br/>
+Example using : <a href="javascriptWebApiClient" style="font-size: 18pt;">javascriptWebApiClient</a>
+<br/><br/>
+
+<script>
+//////////// sound ////////////
+// https://ssl11.pair.com/bbamont/samples/samples.html
+// problem: on dell laptop, sound not stereo using headphones.
+//          using bluetooth headphones, stereo ok
+//          disabled service "waves audio service" but no change.
+
+/*
+var myArrayBuffer = audioCtx.createBuffer(2, frameCount, audioCtx.sampleRate);
+var anotherArray = new Float32Array;
+// Copy channel data from second channel of myArrayBuffer.
+myArrayBuffer.copyFromChannel(anotherArray,1,0);
+// Copy data from anotherArray to first channel of myArrayBuffer. Both channels have the same data now.
+myArrayBuffer.copyToChannel (anotherArray,0,0);
+*/
+
+const REAL_TIME_FREQUENCY = 440; 
+const ANGULAR_FREQUENCY = REAL_TIME_FREQUENCY * 2 * Math.PI;
+const SAMPLEPERSEC = 44100;
+const DURATION = 0.5; // in seconds
+function sndTest1() {
+  console.log("fff..oo. " + ANGULAR_FREQUENCY * 1.5)
+  let audioContext = new AudioContext();
+  let myBuffer = audioContext.createBuffer(2, SAMPLEPERSEC * DURATION * 2, SAMPLEPERSEC);
+  var dataLeft = new Float32Array(SAMPLEPERSEC * DURATION);
+  var dataRight = new Float32Array(SAMPLEPERSEC * DURATION);
+  //let dataLeft = myBuffer.getChannelData(0);  //let dataRight = myBuffer.getChannelData(1);
+  for (let sampleNumber = 0 ; sampleNumber < SAMPLEPERSEC * DURATION * 2 ; sampleNumber += 1) {
+    dataLeft[sampleNumber] = generateSample(sampleNumber, ANGULAR_FREQUENCY);
+    dataRight[sampleNumber] = generateSample(sampleNumber, ANGULAR_FREQUENCY * 1.5);
+  }
+  // https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer/copyToChannel
+  // https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Using_AudioWorklet
+  // https://developers.google.com/web/updates/2017/12/audio-worklet
+  // The MediaStreamAudioSourceNode interface is a type of AudioNode which operates as an audio source whose media is received from a MediaStream obtained using the WebRTC or Media Capture and Streams APIs.
+  playIt2(audioContext, myBuffer, dataLeft, dataRight);
+}
+
+function playIt2(audioContextA, buffA, dataLeftA, dataRightA) {
+  buffA.copyToChannel(dataLeftA,0,0);
+  buffA.copyToChannel(dataRightA,1,11110);
+  let buffSrcA = audioContextA.createBufferSource();  // I'm a AudioBufferSourceNode
+  // AudioWorkletNode
+  /*
+  navigator.mediaDevices.getUserMedia ({audio: true, video: false})
+    .then(function(stream) {
+        video.srcObject = stream; // tries to get microphone
+        video.onloadedmetadata = function(e) {
+            video.play();
+            video.muted = true;
+        };
+      })
+      */
+      
+  buffSrcA.buffer = buffA;
+  buffSrcA.connect(audioContextA.destination);
+  buffSrcA.addEventListener('ended', () => {
+      playIt(audioContextA, buffA, dataLeftA, dataRightA)
+    })
+  buffSrcA.start();
+  
+}
+
+function playIt(audioContextA, buffA, dataLeftA, dataRightA) {
+  buffA.copyToChannel(dataLeftA,0,0);
+  buffA.copyToChannel(dataRightA,1,11110);
+  let buffSrcA = audioContextA.createBufferSource();  // I'm a AudioBufferSourceNode
+  buffSrcA.buffer = buffA;
+  buffSrcA.connect(audioContextA.destination);
+  buffSrcA.addEventListener('ended', () => {
+      playIt(audioContextA, buffA, dataLeftA, dataRightA)
+    })
+  buffSrcA.start();
+}
+
+function generateSample(sampleNumber, angFreq) {
+  let sampleTime = sampleNumber / 44100;
+  let sampleAngle = sampleTime * angFreq;
+  return Math.sin(sampleAngle);
+}
+
+//////////////  sound ///////////////////
+
+function webSocketConnectNtest() {
+  webSocketConnect();
+  audioCon = new AudioContext()
+  console.log(audioCon)
+  // fails if called immediately... sendData();
+}
+
+/// websocket testing ... ////////////////////////////////////////////////////
+var webSocketA;
+function webSocketConnect() {
+  var webSockProtocol = "ws:";
+  if (window.location.protocol == "https:") webSockProtocol = "wss:";
+  var sockURL = webSockProtocol + '//' + location.host + '/websockA';
+  console.log('accessing ' + sockURL);
+	webSocketA = new WebSocket(sockURL);
+  // now setup "lifecycle messages" for the WebSocket. onmessage() is REPETITIVE
+	webSocketA.onmessage = function(data) {
+		console.log("from socket...: " + data.data);
+	}
+  webSocketA.onopen = function() { // callback for when handshake done & socket is ready to go
+    console.log("onopen event")
+    // now that it's ready, do something
+    webSocketSendTestData();
+  }
+  webSocketA.onclose = function() { 
+    console.log("onclose event bye bye websocket")
+  }
+}
+function webSocketClose() {
+	if (webSocketA != null) {
+		webSocketA.close();
+	}
+	console.log("Websocket is in disconnected state");
+}
+sessionID = 100;
+function webSocketSendTestData() {
+	var data = JSON.stringify({
+    'command' : 'loopThing',
+		'user' : 'testuser',
+    'sessionID' : sessionID++
+	})
+  if (!webSocketA) { console.log('webSocketA not yet new()\'ed'); return; }
+	webSocketA.send(data);
+}
+
+//// websocket binary ////////////////////////////////////////////
+// https://medium.com/swlh/websockets-with-spring-part-1-http-and-websocket-36c69df1c2ee
+var webSocketBinary;
+function webSocketBinaryConnect() {
+    var webSockProtocol = "ws:";
+    if (window.location.protocol == "https:") webSockProtocol = "wss:";
+    var sockURL = webSockProtocol + '//' + location.host + '/websockBinaryB';
+    console.log('accessing ' + sockURL);
+    webSocketBinary = new WebSocket(sockURL); 
+    webSocketBinary.binaryType = "blob";
+    webSocketBinary.onopen = function () { 
+        // send binary messages
+        webSocketBinary.send(new Blob([new Uint8Array([0x48, 0x48,0x48,0x65, 0x6c, 0x6c, 0x6f, 0x21]).buffer]));     // send text messages
+        //webSocketBinary.send("Hello!"); 
+    }
+    webSocketBinary.onmessage = function(msg) { 
+        if (msg.data instanceof Blob) { 
+            //console.log("got blob " + msg.text)
+            // msg.data.text().then(res => console.log("string: " + res));
+            msg.data.text().then(zzz => { 
+                console.log("zzz " + zzz); 
+                return zzz;
+            })
+        } else {
+            console.log("got text " + msg.data())
+        }
+    }
+    webSocketBinary.onerror = function (error) {
+      console.log("webSocketBinary.onerror ethwthwt")
+    }
+    webSocketBinary.onclose = function () {
+      console.log("webSocketBinary.onclose qrgqrgqrg")
+    } 
+  }
+///////////////////////////////////////////////////////
+
+</script>
+
+</body>
+</html>

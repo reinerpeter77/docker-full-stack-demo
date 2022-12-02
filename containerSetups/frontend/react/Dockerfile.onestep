@@ -1,0 +1,17 @@
+# sets up react.js and app in one step. Does HUGE download. As alternative, use Dockerfile.uses_react_basic
+FROM node:10-alpine 
+# build test -> sudo docker build -t reacttrash1 -f Dockerfile.onestep .
+# run test -> sudo docker run --name rtrashrun -p 3000:3000 -d reacttrash1
+RUN mkdir /app
+WORKDIR /app
+# package.json has the stuff for react.js 
+# It was created using "npx create-react-app my-app"
+COPY package.json /app
+# this does a HUGE download of node_modules for react.js 
+RUN npm install
+COPY . /app
+RUN npm run build
+RUN echo "npm run build done"
+# below gets run by "docker run ....", not "docker build ... "
+ENTRYPOINT ["npm","start"]   # RUN npm start
+

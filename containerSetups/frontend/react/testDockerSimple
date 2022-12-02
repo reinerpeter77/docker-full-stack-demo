@@ -1,0 +1,15 @@
+
+# stop running container and remove container from docker (NOT image)
+docker rm -f testReactContainer   #removes running container- not image
+# removes image using "docker image rm" -f means stop/remove even if a container using it is running, 
+#    otherwise quits. It does NOT STOP RUNNING CONTAINER
+docker image rm -f test_react_image
+docker build -t test_react_image -f Dockerfile.uses_react_node_modules .
+docker run --name testReactContainer -it -p 3002:3001 -d test_react_image # -d means keep running in background
+echo here is the log:
+docker logs -f testReactContainer  # -f means follow which keep running log until contrl-c
+
+# docker system prune -a # DANGER removes all containers which stops your work if slow internet connection!
+# docker ps --no-trunc # --no-trunc shows whole command line
+# npx create-react-app my-app
+# docker exec -it  testReactContainer sh

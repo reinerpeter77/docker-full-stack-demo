@@ -1,0 +1,13 @@
+sudo docker stop run3
+sudo docker rm run3
+sudo docker build -t ng3 .
+sudo docker run --name run3 -p 80:86 -d ng3
+
+echo curl localhost/bb/index.html
+curl localhost/bb/index.html
+echo
+echo curl localhost
+curl localhost
+echo curl localhost/restA/
+curl localhost/restA/
+

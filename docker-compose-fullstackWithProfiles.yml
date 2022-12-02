@@ -1,0 +1,123 @@
+
+
+version: '3.5'
+
+# This docker-compose file is an outline which extends [inherits from] other docker-compose files.  
+# Its purpose is to selectively activate/disable services by way of the profiles tag and show all services in an uncluttered(!) way.
+# Look in extended docker-compose.yml files in this folder for details about each container.  
+# following line activates services with profiles dbOnly AND allLayersA:
+# >> docker-compose -f docker-compose-fullstackWithProfiles.yml --profile dbOnly --profile allLayersA up -d
+# Other example for database server, as needed when running vscode spring-boot
+# docker-compose -f docker-compose-fullstackWithProfiles.yml --profile dbOnly up -d# >> docker-compose -f docker-compose-fullstackWithProfiles.yml exec webA ls
+# WARNING: INDENTATION IS IMPORTANT FOR THIS FILE TO RUN PROPERLY
+
+services:
+
+  dbServiceA:
+      # says only start this service if --profile dbOnly is in command line
+      profiles:
+      - dbOnly
+      # says to look in file: docker-compose-backend.yml, then do stuff in the dbServiceA tag there.
+      extends:
+          file: docker-compose-backend.yml
+          service: dbServiceA
+
+  phpmyadmin:
+      extends:
+          file: docker-compose-backend.yml
+          service: phpmyadmin
+      profiles:
+      - dbOnly
+
+  webA:
+      profiles:
+      - allLayersA
+      extends:
+          file: docker-compose-backend.yml
+          service: webA
+      # ports ADDS TO the ports value of the extended file and does NOT REPLACE it. 
+      # WARNING: LEFT IS WHAT'S EXPOSED TO NET, RIGHT IS PORT NUM OF SERVER IN CONTAINER
+      ####- "8086:8081"
+      ports:
+      - "8086:8081"
+      environment:
+      - server.port=8081
+      - color7=${color7}
+      # same as -Dflavor=lemon command line in Dockerfile
+      - flavor="chocolate chip cookie again"
+      
+      ######### --START HTTPS --    COMMENT SECTION OUT UNLESS HTTPS IS NEEDED #############
+      # ref...   https://docs.docker.com/compose/environment-variables/ [note "env_file" thing wont work for me ???]
+      - server.ssl.key-store-type=PKCS12
+      # JAR FILE MUST BE REBUILT TO INCLUDE CERT FILE after copying certificate to below location. 
+      # containerSetups/backend/spboot/src/main/resources/keystore/fsddkey.p12
+      - server.ssl.key-store=classpath:keystore/fsddkey.p12
+      # looks in shell env OR ".env" file for entry "sslHttpsPasswd=mysecretpasswordhere"
+      - server.ssl.key-store-password=${sslHttpsPasswd}
+      - server.ssl.key-alias=fsddkey
+      - server.ssl.enabled=true
+      ######### --END HTTPS-- #############
+
+##############   front end #################
+
+  # this does not start a service, rather it does a huge one-time download for react.js node_modules
+  # and creates an image which serves as a starting point for service reactA.
+  # Because of this, rebuilding reactA image is fast.
+  react_node_modules_downloaded: 
+    profiles:
+      - allLayersA
+    extends:
+          file: docker-compose-frontend.yml
+          service: react_node_modules_downloaded
+
+  reactA:
+    profiles:
+      - allLayersA
+    extends:
+          file: docker-compose-frontend.yml
+          service: reactA
+    ######### --START HTTPS --    COMMENT SECTION OUT UNLESS HTTPS IS NEEDED #############
+    environment:
+      - HTTPS=true
+    ######### --END HTTPS
+    
+  nginxA:
+    profiles:
+      - allLayersA
+    extends:
+          file: docker-compose-frontend.yml
+          service: nginxA
+    
+##############  END front end
+
+
+# **** THE EXTENDS THING ONLY SEEMS TO WORK FOR SERVICES. ****
+#       THE STUFF BELOW WAS JUST COPIED FROM THE EXTEND-ED FILE BECAUSE DOCKER WONT
+#       RUN WITHOUT THESE ENTRIES. 
+
+secrets:
+  # only used once to setup new database, then is ignored
+  # root password is not wanted here, as no docker app should have it.
+  rootPass_newDBsetup:
+    file: ./secrets/docker/rootPass_newDBsetup.secret
+  # password used by non-root user, by client such as spring-boot
+  mysqlPasswd:
+    file: ./secrets/docker/mysqlPasswd.secret
+  dbUrl:
+    file: ./secrets/docker/dbUrl.secret
+
+networks:
+  sardines:
+    name: sardines-network
+    
+volumes:
+  logvolume01: {}
+            
+# volumes:
+#  logvolume01:
+#      extends:
+#          file: docker-compose-backend.yml
+
+
+
+

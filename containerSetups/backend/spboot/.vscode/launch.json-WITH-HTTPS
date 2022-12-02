@@ -1,0 +1,87 @@
+{
+    // full-stack-docr/containerSetups/backend/spboot/.vscode/launch.json
+    // This version of launch.json is for HTTPS server. HTTPS required for webAudio calls in javascript on browser.
+    // FOR EXPLANATION, REFER TO FILE docker-compose-fullstackWithProfiles.yml
+    // question:  cant figure out where the .class or .jar files get run. Removing the
+    // jar made by ./gradlew build has no effect and does not create a new one
+    "version": "0.2.0",
+    // "need VSCode extension rioj7.command-variable to parse secrets file to get ssl cert password",
+    // "to install it click on the 4-blocks thing on left menu and type in rioj7.command-variable in search box. RESTART VSCODE",
+    "inputs": [
+        {
+          "id": "sslHttpsPasswd",
+          "type": "command",
+          "command": "extension.commandvariable.file.content",
+          "args": {
+            "fileName": "${workspaceFolder}/../../../secrets/dockerEnvFile.env",
+            "key": "sslHttpsPasswd",
+            "default": "sslHttpsPasswd-not-setup-launch-json"
+          }
+        },
+        {
+          "id": "color7input",
+          "type": "command",
+          "command": "extension.commandvariable.file.content",
+          "args": {
+            "fileName": "${workspaceFolder}/../../../secrets/dockerEnvFile.env",
+            "key": "color7",
+            "default": "color7-not-setup-launch-json"
+          }
+        }
+      ],
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "args": "these are the args!"
+        },
+        {
+          "type": "java",
+          "name": "port 8086 ",
+          "request": "launch",
+          "mainClass": "com.example.springboot.Application",
+          "projectName": "spring-boot",
+          "COMMENT": "id 'org.springframework.boot' version '2.6.3' NEEDS THE FOLLOWING TO RUN CIRCULAR REFERENCE:",
+          "vmArgszzzz": "-Dserver.port=8086 -Dspring.main.allow-circular-references=true",
+          "vmArgsqqq": "-Dserver.port=8086 -Dserver.http2.enabled=true",
+          "vmArgs-thisWorksAlso": "-Dserver.port=8086",
+          "vmArgs": "",
+          "env entries below do same thing as above -Dflavor=lemon": "ketchup",
+          "env": {
+              "zzzz-server.http2.enabled": false,
+              "server.port": 8086,
+              // "input thing is from VSCode extension rioj7.command-variable",
+              "color7": "${input:color7input}",
+              "flavor": "https stuff below. Goes into docker-compose*.yml when using docker",
+            }
+        },
+        {
+            "type": "java",
+            "name": "HTTPS port 8086",
+            "request": "launch",
+            "mainClass": "com.example.springboot.Application",
+            "projectName": "spring-boot",
+            "COMMENT": "id 'org.springframework.boot' version '2.6.3' NEEDS THE FOLLOWING TO RUN CIRCULAR REFERENCE:",
+            "vmArgszzzz": "-Dserver.port=8086 -Dspring.main.allow-circular-references=true",
+            "vmArgsqqq": "-Dserver.port=8086 -Dserver.http2.enabled=true",
+            "vmArgs-thisWorksAlso": "-Dserver.port=8086",
+            "vmArgs": "",
+            "env entries below do same thing as above -Dflavor=lemon": "ketchup",
+            "env": {
+                "zzzz-server.http2.enabled": false,
+                "server.port": 8086,
+                "nextlineNote": "input thing is from VSCode extension rioj7.command-variable",
+                "color7": "${input:color7input}",
+                "flavor": "https stuff below. Goes into docker-compose*.yml when using docker",
+                "server.ssl.key-store-type": "PKCS12",
+                "server.ssl.key-store": "classpath:keystore/fsddkey.p12",
+                // "input thing is from VSCode extension rioj7.command-variable",
+                "server.ssl.key-store-password": "${input:sslHttpsPasswd}",
+                "server.ssl.key-alias": "fsddkey",
+                "server.ssl.enabled": true
+              }
+        }
+    ]
+}

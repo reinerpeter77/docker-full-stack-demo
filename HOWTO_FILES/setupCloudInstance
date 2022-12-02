@@ -1,0 +1,83 @@
+
+
+# july 2022 
+# setup aws instance like this:
+# Ubuntu Server 20.04 LTS (HVM), SSD Volume Type choose 2gb t2.small, not 1gb t2.nano
+# To login to above, use a git-bash window on pc, which gets installed 
+# along with git.  On the AWS console, go to instance, push connect and 
+# click on ssh client tab and it gives you the command line to run on the pc to login to the instance.
+# Now to login to it from the PC: On the pc there should be an 
+# amazon key file, so connect with:   
+# ssh -i "awsKeyPair789.pem" ubuntu@zz.zz.zz.zz
+# The key file gets created when you create an instance on AWS and at that time, it gets downloaded 
+# to the pc via the AWS console webpage.
+# example of remote command to cloud from pc
+# ssh -i "/remoteHostPc/awsKeyPairABC.pem" ubuntu@zzzz.compute.amazonaws.com "cd /home/ubuntu/full-stack-docr && Scripts/GitPull.sh"
+# to copy a file from local box to cloud [other examples will follow]:
+# cat /remote/id_rsaABC | ssh -i /remote/awsKeyPair2.pem ubuntu@1.2.3.4 "cat - > ~/.ssh/id_rsaABC"
+#########################
+
+echo script for setting up cloud instance
+
+
+echo note that gradle does not get installed; gradlew script obtains gradle when it is run.
+sudo apt-get update
+sudo apt install openjdk-11-jdk-headless
+sudo apt install -y docker.io
+sudo apt install -y curl
+# echo installing proper version of docker-compose which can handle profile tag 
+echo DANGER: make sure you trust url below because you're copying an executable to your instance.
+exit
+sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod 755 /usr/local/bin/docker-compose 
+ls -l /usr/local/bin
+echo should be /usr/local/bin/docker-compose
+which docker-compose
+
+
+vi ~/.bashrc
+vi ~/.ssh/config
+mkdir projs
+cd projs/
+
+# to copy github keys from desktop pc to cloud instance, run this:
+# cat /remote/id_rsaABC | ssh -i /remote/awsKeyPair2.pem ubuntu@1.2.3.4 "cat - > ~/.ssh/id_rsaABC"
+# cat /remote/id_rsaABC.pub | ssh -i /remote/awsKeyPair2.pem ubuntu@1.2.3.4 "cat - > ~/.ssh/id_rsaABC.pub"
+# done with desktop
+
+git clone git@host_rsaABC:txtjqm/full-stack-docr.git
+chmod 500 ~/.ssh/id*
+
+echo making docker group, adding user to it
+# some of these snippets are from
+# https://docs.docker.com/engine/install/linux-postinstall/
+# now add group "docker" and add self to it
+sudo groupadd docker
+# -a means add user to group; -G means the list of groups follows; 
+# $USER is enviroment var set to current user.
+# commands to verify new group created and user is in it.
+sudo usermod -aG docker $USER
+cat /etc/passwd- |grep osbo
+cat /etc/group|grep docker
+echo done adding to group. May need to logout/in
+
+# setup docker secrets. substitue xxxx with something secret. escape $ with slash \
+# the -n prevents echo from inserting linefeed at end of file, which messes up password.
+echo -n "xxxxx" > secrets/docker/rootPass_newDBsetup.secret
+echo -n "xxxxx" > secrets/docker/mysqlPasswd.secret
+echo now copy secrets/docker/mysqlPasswd.secret_blank to mysqlPasswd.secret and edit it. 
+echo in the corsMappingsForServer section, Put in public IP address of cloud server
+# now check for linefeeds: echo AAA$(cat secrets/docker/mysqlPasswd.secret)BBB
+docker-compose -f docker-compose-fullstackWithProfiles.yml --profile dbOnly --profile allLayersA up -d
+Scripts/backEndSpringBootRedo.sh
+curl -v http://localhost:8086 --output -
+
+# to setup keystore on cloud instance:
+# to copy local keystore (probably a vm) box with keystore run:
+cat containerSetups/backend/spboot/src/main/resources/keystore/fsddkey.p12 | ssh -i /remote/awsKeyPair2.pem ubuntu@54.177.44.60 "cat - > ~/fsddkey.p12"
+# on cloud box,  not container:
+cp ../fsddkey.p12  containerSetups/backend/spboot/src/main/resources/keystore
+
+
+
+

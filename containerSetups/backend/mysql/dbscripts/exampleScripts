@@ -1,0 +1,42 @@
+
+Example scripts.
+
+# # sudo docker-compose exec dbServiceA bash
+# root@bc366b16c9de:/# mysql -h localhost --port 3306 -u user2 -p test1db
+Enter password:
+...
+mysql> select * from carmakers
+    -> ;
++--------+--------+
+| name   | nation |
++--------+--------+
+| ford   | usa    |
+| toyota | japan  |
++--------+--------+
+2 rows in set (0.00 sec)
+#######################################################
+
+----------------------------------------------
+DB passwords are obtained from the docker secrets mechanism.
+It produces files in /run/secrets with are used here in the command
+line to provide passwords to mysql commands.
+These secrets are setup by docker-compose.yml
+They are not stored on the github repo because of this line in .gitignore:
+*.secret
+Because of this they must be setup after git clone.
+NOTE: See file AmakeSecretFiles to see how to avoid linefeeds in secrets file, which messes up passwords!
+
+
+# mysql -h localhost --port 3306 -u root --password=$(cat /run/secrets/rootPass_newDBsetup) mysql
+
+# cat newUser |  mysql -h localhost --port 3306 -u root --password=$(cat /run/secrets/rootPass_newDBsetup) mysql
+
+# this substitues the string *** with the real password for the new user.
+
+# below, mysql is the db schema to use.
+# cat newUser | sed "s/\*\*\*/$(cat /run/secrets/mysqlPasswd)/" | mysql -h localhost --port 3306 -u root --password=$(cat /run/secrets/rootPass_newDBsetup) mysql
+
+# echo helxxo | sed "s/xx/$(cat /run/secrets/mysqlPasswd)/"
+# echo hel**o | sed "s/\*\*/$(cat /run/secrets/mysqlPasswd)/"
+
+# cat dbexport.txt |  mysql -h localhost --port 3306 -u dbUser2 --password=$(cat /run/secrets/mysqlPasswd) dbUser2

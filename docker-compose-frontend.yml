@@ -1,0 +1,85 @@
+
+# version: '3.5'
+version: '3.9'
+
+# WARNING: INDENTATION IS IMPORTANT FOR THIS FILE TO RUN PROPERLY
+
+services:
+  react_node_modules_downloaded:
+    # this image requires a huge download for node_modules and serves as
+    # starting point for react apps so that they can be rebuilt without
+    # the huge download (for slow connections)
+    build:
+        context: ./containerSetups/frontend/react
+        dockerfile: Dockerfile.react_node_modules_downloaded
+    # below image is starting point for react containers in this project
+    image:
+        image_react_node_modules_downloaded
+
+  reactA:
+    # This container starts a development react.js server 
+    # to rebuild react.js production for nginx-> Scripts/frontEndReactBuildProdForNGINX.sh
+    # compiled files into /app/build for nginx to serve on web.
+    # See volumes section for mappings (react and for nginx) in this file.
+    # restart: unless-stopped    # restart on boot if running before
+    build:
+        context: ./containerSetups/frontend/react
+        dockerfile: Dockerfile.uses_react_node_modules
+    command: ["echo", "this is command echo in docker-compose zzzzzzzzzzzzzzzzzz"]
+    container_name: react_container
+    image: img_react_doccompose
+
+    # to reprocess this: shut docker and -> docker image rm image_react_container
+    # 'reactNpmPackageJson' **dont delete this it associates to other files. Search for this tag to see.
+    # file containerSetups/frontend/react/Dockerfile.uses_react_node_modules
+    # has the entry: ENV PORT="3001" which makes react.js run at port 3001
+    # so make it visible at port 3008, the same port used by VSCode setup (so bookmark works for both)
+    ports:
+    - "3008:3001"
+    volumes:
+      # these shared folders make changes in source code on host immediately available
+      # to the react.js dev server. Changes made by VSCode (in dev box) or "git pull" (in cloud instance)
+      - ./containerSetups/frontend/react/public:/app/public
+      - ./containerSetups/frontend/react/build:/app/build
+      - ./containerSetups/frontend/react/src:/app/src
+      # Note: the files in the volume on the container folder do not get used during running. 
+      # Instead the files in the host folder replace them. So if the react container does an 
+      # npm build those built files end up in the containers folder. And they get visible to nginx 
+      # which them serves them on the web. Note that the public folder of react also needs to get served by nginx.
+
+  nginxA:
+    # sudo docker exec nginx_container ls publicHtml
+    # sudo docker exec nginx_container cat /etc/nginx/conf.d/default.conf
+    # sudo docker exec -it nginx_container sh
+    # to rebuild react.js production -> Scripts/frontEndReactBuildProdForNGINX.sh
+    restart: "no"   # unless-stopped    # restart on boot if running before
+    # build tag says dont use dockerhub image, but use dockerfile instead in
+    # the folder specified by 'context'
+    build:
+        context: ./containerSetups/frontend/nginx
+        # this is the dockerfile inside of the above directory
+        dockerfile: Dockerfile
+    # if not specified, names container using fs path (messy) so name it here
+    container_name: nginx_container
+    # this is the image shown in -> sudo docker images
+    # shown nothing when doc-compse is down -> sudo docker-compose images nginxA
+    image: nginx_image_dockrcompos
+    ports:
+    # containerSetups/nginx/default.conf sets nginx to run at port 86
+    # so map it to appear to the world at port 80
+    - "80:86"
+    volumes:
+      # to see nginx setup -> cat containerSetups/nginx/default.conf
+      # WARNING DONT USE CAPITALS IN CONTAINER FOLDER NAME
+      - ./containerSetups/frontend/react/public:/react_public
+      - ./containerSetups/frontend/react/build:/react_build
+
+# secrets:
+
+
+volumes:
+  # sudo docker volume inspect irving
+  publicHtmlA: 
+    name: irving
+
+

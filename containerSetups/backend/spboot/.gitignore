@@ -1,0 +1,15 @@
+
+# after removing an entry from this file, must remove local cache with "git rm -r --cached ."
+# or else it will still get saved & updated
+
+/build/
+/bin/
+/bin.hid/
+
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+

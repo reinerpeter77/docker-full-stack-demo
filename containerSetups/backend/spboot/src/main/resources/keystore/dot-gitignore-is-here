@@ -1,0 +1,6 @@
+
+This file contains a *.p12 keystore, which should not be included
+in git. The .gitignore causes it to be ignored.
+.gitignore file in this folder, by default it is hidden
+"ls -a" shows hidden files 
+in ubuntu file manager, 3-line menu thing->check "show hidden files" 

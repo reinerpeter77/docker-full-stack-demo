@@ -1,0 +1,83 @@
+
+// This is build.gradle  Gradle is extremely brittle and hard to debug.
+// Made using spring initializr at https://start.spring.io:
+//    from above, chose java gradle project, then on right side specified the 5 dependencies need by a springboot app,
+//    as determined by a sample project and looking at error messages/googling.
+// I then went to https://mvnrepository.com and got entries for dependencies WITH version numbers.
+// When you use gradle you don't need to download many libraries and figure out which library
+// depends on other libraries and download those too, and on and on; gradle tracks these for you.
+
+// SNAFU: using jdk 11 line below: "applicationDefaultJvmArgs = ['-Dserver.port=80']"
+// gives a "permission denied" error (!) because jdk11 wont allow addresses less than 8000. using port 8086 works fine!
+// SNAFU: id 'org.springframework.boot' version '2.6.3' will CRASH if circular reference is in code!
+plugins {
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	id 'org.springframework.boot' version '2.6.3'
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'application' // not by initializr
+}
+
+// START not put here by ininitalizr
+ext {  
+   applePieIsTasty = "com.example.springboot.Application"
+}
+application {
+    mainClass.set(applePieIsTasty)
+    //SAVE THIS FOR REFERENCE applicationDefaultJvmArgs = ['-Dserver.port=8086 -Dspring.main.allow-circular-references=true']
+	applicationDefaultJvmArgs = ['-Dserver.port=8086']
+}
+// END not put here by ininitalizr
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+// when changed dockerfile "FROM" to jdk11 from jdk8, changed it here too
+sourceCompatibility = '11'
+// sourceCompatibility = '8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	// initializr put entry here but I replaced with implementation and VERSION cuz version prevents breaking in future
+	// initializr entry -> implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: '2.3.12.RELEASE'
+	// initializr entry ->implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-thymeleaf', version: '2.3.12.RELEASE'
+	// initializr entry ->implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.3.12.RELEASE'
+
+    // start for websocket
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
+    // WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.3.12.RELEASE'
+	// https://mvnrepository.com/artifact/org.json/json
+    implementation group: 'org.json', name: 'json', version: '20210307'
+	// end for websocket
+
+	// BOTH VERSIONS MUST BE THE SAME for "com.fasterxml...." added after getting class-not-found error.
+    //  including this breaks it->   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.4'
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '2.11.4'
+
+	// initializr ->developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.3.12.RELEASE'
+	// initializr ->runtimeOnly 'mysql:mysql-connector-java'
+	runtimeOnly group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
+	// initializr ->testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	// WARNING: specify version number. If not, NEWEST is used and may introduce bugs or vulnerabilities not yet found.
+	testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '2.3.12.RELEASE'
+}
+
+// commented out because "./gradlew build" results in error
+// tasks.named('test') {
+// 	useJUnitPlatform()
+// }
+

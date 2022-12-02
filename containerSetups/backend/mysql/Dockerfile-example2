@@ -1,0 +1,26 @@
+# sets up react.js app starting with preexisting image to avoid HUGE 
+# node_modules download every time.....
+FROM save_this_react_node_modules 
+# to build "FROM" -> 
+# sudo docker build -t save_this_react_node_modules -f Dockerfile.react_node_modules .
+# to test-> 
+# sudo docker build -t reacttrash1-build -f Dockerfile.uses_react_node_modules .
+# sudo docker run --name run-reacttrash1 -p 88:3000 -d reacttrash1-build
+#                [then http://localhost:88]
+#           sudo docker exec -it run-reacttrash1 sh
+# this causes container to build for production
+#     putting files into /app/build to be served by nginx
+#     via docker-compose.yml volume (shared)
+#           sudo docker exec -it run-reacttrash1 npm build
+#           sudo docker logs $(sudo docker ps -aq --filter=name=run-reacttrash1)
+#           sudo docker rm -f run-reacttrash1 
+# build and run commands are only for troubleshooting, 
+# as docker-compose will do all these.
+WORKDIR /app
+# /app already exists from the "FROM" image.
+COPY . /app  
+# (optional) build for production, puts file into /build. Served by nginx
+######## RUN npm run build && echo "npm run build done"
+# ENTRYPOINT gets run LATER by "docker run ...", or by docker-compose
+ENTRYPOINT ["npm","start"]   
+

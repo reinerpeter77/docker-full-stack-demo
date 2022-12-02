@@ -1,0 +1,98 @@
+package com.example.springboot.Helper2;
+
+// https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#websocket-intro-architecture
+
+// added to build.gradle -> implementation group: 'org.springframework.boot', name: 'spring-boot-starter-websocket', version: '2.3.12.RELEASE'
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.BinaryWebSocketHandler;
+
+import Helper.DSPhelper;
+
+import java.io.ByteArrayOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
+import org.json.JSONObject;
+import org.springframework.web.socket.BinaryMessage;
+// import org.springframework.web.socket.TextMessage;
+
+public class Sounds { // extends BinaryWebSocketHandler {
+
+	/**
+	 * Inner class which handles a specific type of sound waveform request.
+	 * Eventually there will be several of these inner classes.
+	 */
+	// javascript float32 equivalent to java float
+	// static int callCountForSweepFcn = 0;
+	public class SweepChunks extends BinaryWebSocketHandler {
+		int ct;
+		int callCountForSweepFcn = 0;
+		int carrStart = 880;
+		int carrEnd = 1600;
+
+		// from org.springframework.web.socket.handler.AbstractWebSocketHandler
+		// cannot rename because its an override, so rename the class instead.
+		@Override
+		protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message)
+				throws Exception {
+			try {
+				ByteBuffer inByteBuff = message.getPayload();
+				Charset charset = Charset.forName("ISO-8859-1");
+				String text = charset.decode(inByteBuff).toString();
+				JSONObject jsonObject = new JSONObject(text);
+				// System.out.println("SweepChunks input json: " + jsonObject.toString());
+				int reqNum = 0, chunkSizeSamples = 0, stfreq = 0, endfreq = 0, fmModFreq = 0, phaseShiftAngle = 0;
+				String stereoTestMode = "";
+				try {
+					reqNum = (int) jsonObject.get("reqNum");
+					chunkSizeSamples = (int) jsonObject.get("chunkSizeSamples");
+					stfreq = (int) jsonObject.get("startCarrier");
+					endfreq = (int) jsonObject.get("endCarrier");
+					phaseShiftAngle = (int) jsonObject.get("phaseShiftAngle");
+					fmModFreq = (int) jsonObject.get("fmModFreq");
+					stereoTestMode = jsonObject.getString("stereoTestMode");
+				} catch (Exception ex) {
+					System.out.println("error parsing json");
+				}
+				System.out.print("swpch" + reqNum);
+				DSPhelper sndThing = new DSPhelper();
+				// float[] sndData = sndThing.fillBuffF32_stereophonic(
+				// 		chunkSizeSamples * 2 /* stereo */, stfreq);
+				float[] sndData = sndThing.fillBuffF32_stereophonicRamped(
+					chunkSizeSamples * 2 /* stereo */, stfreq, endfreq, phaseShiftAngle,
+					fmModFreq, stereoTestMode);
+
+				// socket sends as bytes, so convert from float array to byte array. Reconstruct
+				// floats on other side.
+				// see commented javascript below for re-assembling bytes to floats in client
+				byte[] bytesForWebSocket = DSPhelper.floatsToBytes(sndData);
+				session.sendMessage(new BinaryMessage(bytesForWebSocket));
+			} catch (Exception ex) { // must catch or broken socket crashes server!
+				System.out.println(ex.getMessage());
+			}
+		}
+	}
+	/*
+	 * save this. Javascript to re-assemble floats from bytes sent by this socket
+	 * static arrayBufferToFloat32Array(ArrayBufferIn) {
+	 * // from the official docs: getFloat32(byteOffset)
+	 * // getFloat32(byteOffset, littleEndian)
+	 * // packs sets of 4 bytes into single float32's, determined by byte order as
+	 * indicated.
+	 * // THE ABOVE RACIST SLUR IN THE OFFICIAL DOCS IS UNACCEPTABLE. IT IS A
+	 * LEFTOVER FROM 50+ YEARS AGO.
+	 * // var z = Float32Array.from(ArrayBufferIn); // no good.. it doesnt combine
+	 * bytes into floats
+	 * var BYTES_PER_F32 = 4;
+	 * var f32Array = new Float32Array(ArrayBufferIn.byteLength/BYTES_PER_F32);
+	 * var f32Idx = 0;
+	 * var byteOrderLeastFirst = false;
+	 * var inputDataView = new DataView(ArrayBufferIn);
+	 * for (var idx = 0; idx < ArrayBufferIn.byteLength; idx += BYTES_PER_F32) {
+	 * f32Array[f32Idx++] = inputDataView.getFloat32(idx, byteOrderLeastFirst);
+	 * }
+	 * return f32Array;
+	 * }
+	 */
+}

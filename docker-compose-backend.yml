@@ -1,0 +1,163 @@
+# version: '3.9'
+version: '3.5'
+# WARNING: default docker-compose may not work with v.3.9+
+# DO THIS TO INSTALL. Goto https://docs.docker.com/compose/install/, then
+# click LINUX tab and see the following, which copies into /usr/local/bin
+## sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+## sudo chmod +x /usr/local/bin/docker-compose
+# NOTE: https://github.com/docker has a git "verified" tag. 
+
+# version: '3.5'
+# WARNING: INDENTATION IS IMPORTANT FOR THIS FILE TO RUN PROPERLY
+
+# sudo docker-compose -f docker-compose-backend.yml exec dbServiceA /bin/sh
+# to rebuild docker image and reload :   [sudo needed for database because of data folder]
+# Scripts/rebuildContainerImage.sh  [without arguments gives summary]
+# sudo Scripts/rebuildContainerImage.sh docker-compose-backend.yml sql-container mysql_dockerfile dbServiceA
+services:
+############### START for database #######################
+
+  dbServiceA:
+    # SETUP USES SHARED VOLUME TO STORE DB DATA. REMOVING/REBUILDING IMAGE WONT CHANGE DB!
+    # ----- to get connection from java:
+    # connection string from cloud. Uses url of db service name defined in this file:
+    # to test db connection: curl -v telnet://xx.xx.xx.xx:3306 --output -
+    # Connection con = DriverManager.getConnection(
+    #         "jdbc:mysql://dbServiceA/test1db?characterEncoding=latin1", "root", "get-from-secret-mysqlPasswd");
+    # connection string from pc during development. Uses url as internet IP address of db server:
+    # Connection con = DriverManager.getConnection(
+    #	      "jdbc:mysql://xx.xx.xx.xx:3306/test1db?characterEncoding=latin1", "user2", "get-from-secret-mysqlPasswd");
+    # ------ to get shell into this container:
+    # sudo docker-compose -f docker-compose-backend.yml exec dbServiceA /bin/sh
+    # in container: cat newUser.sql | sed "s/\*\*\*/$(cat /run/secrets/mysqlPasswd)/" | mysql -h localhost --port 3306 -u root --password=$(cat /run/secrets/rootPass_newDBsetup) mysql
+    # in container: cat dbexport.sql |  mysql -h localhost --port 3306 -u dbUser2 --password=$(cat /run/secrets/mysqlPasswd) dbUser2
+    # script to call on host to start script on container:
+    #  Scripts/DatabaseCreateTestUserAndTable.sh
+    # script to run in container to setup test user and db:
+    # /dbscripts/createUserAndTable.sh
+    ####### 
+    build: 
+        context: ./containerSetups/backend/mysql
+        dockerfile: DockerfileA
+    container_name: sql-container # default uses folder name, that's bad.
+    image: mysql_dockerfile
+    # gets rid of 'mbind: Operation not permitted' message
+    security_opt:
+      - seccomp:unconfined
+    # Tell this db service to use this named network, which is also used by clients.
+    # This applies only to running on the cloud, not from a pc during development.
+    networks:
+      - sardines
+    command: --default-authentication-plugin=mysql_native_password
+    # restart: always
+    environment:
+      # when first started, mysql expects this env variable. After first start, 
+      # it is never used again. This way the passwd can be changed in phpmyadmin and will remain.
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/rootPass_newDBsetup
+      TEST_ENV_2: test-env-2
+    # Now setup secret which creates the above file existing in container
+    secrets:
+      - rootPass_newDBsetup
+      - mysqlPasswd
+      
+      # Note: other passwords are setup within the db, but are set in
+      # secrets for db clients such as spring-boot
+    # tell container to put its data in hosts mysqlDir (shared volume)
+    # This way removing container will not remove data. (not verified)
+    volumes:
+      - ./containerSetups/backend/mysql/mySqlWorkDir:/var/lib/mysql
+      # old - ./mysqlDir:/var/lib/mysql
+    ports:
+      # To do development on a PC (not in cloud) it is necessary to access the
+      # database from the internet. 2 things need for this to work:
+      # (1) expose the port in this file. (2) open the port in the cloud service.
+      # To open port on cloud service ie: on aws, 
+      # security->security group->inbound rules->edit .. add port 3306 with source 0.0.0.0/0
+      # The following line opens port 3306 from this docker service to the internet, without changing its number.
+      - 3306:3306
+
+  phpmyadmin:
+    # this gives an HTML console to the database, accessed via brower
+    # http://xx.xx.xx.xx:84   This gives a login page:
+    # use server dbServiceA (or as specified above), user root and
+    # password as contained in the secret file rootPass_newDBsetup.secret
+    # as defined in mysql tag in this file: MYSQL_ROOT_PASSWORD_FILE
+    image: phpmyadmin
+    container_name: phpmyadmin-frontend # default uses folder name, that's bad.
+    networks:
+      # must be SAME network as db server for it to be visible to phpmyadmin
+      - sardines
+    # restart: always    # restart if crash
+    ports:
+      # map container port 80 to internet port xx. Phpmyadmin uses 80.
+      # WARNING: BE SURE TO OPEN PORT ON CLOUD SERVICE
+      # on aws, security->security group->inbound rules->edit .. add port xx
+      # with source 0.0.0.0/0
+      - 84:80
+    environment:
+      - PMA_ARBITRARY=1
+############### END for database #######################
+
+  webA:
+    ## restart: always    # restart on boot
+    # restart: unless-stopped    # restart on boot if running before
+    # use build tag when a dockerhub image need things added to it.
+    build: 
+        # this is directory where dockerfile, spring boot, gradle files etc live
+        # In that folder, run "gradle build" and other gradle stuff.
+        context: ./containerSetups/backend/spboot
+        # old..    context: ./spboot
+        # this is the dockerfile inside of the above directory
+        dockerfile: DockerfileA
+    # if not specified, names container using fs path (messy)
+    container_name: webA_container
+    # TO UPDATE CODE:
+    # 1) Edit file. 2) ./gradlew build [rebuilds jar]
+    # 3) copy jar to container using CONTAINER NAME (not service) name:
+    # sudo docker container cp build/libs/spring-boot-0.0.1-SNAPSHOT.jar cwebA:testApp.jar
+    # 4) restart using SERVICE name:  sudo docker-compose restart webA
+    # defined here the name of image create by above dockerfile
+    image: spbt_a
+    secrets:
+    - dbUrl
+    - mysqlPasswd
+    ### done in top-level doc-compo.yml...     ports:
+    # WARNING: LEFT IS WHAT'S EXPOSED TO NET, RIGHT IS PORT NUM OF SERVER IN CONTAINER
+    # - "8086:8081"
+    #    - "443:8081"
+    # use same network as used by mysql (in this file)
+    environment:
+      - color7="orange docker-compose-backend.yml"
+      - flavor="this flavor from docker-compose-backend.yml"
+    networks:
+      - sardines
+    # network_mode: 'host'
+    volumes:
+    # - .:/code
+    - logvolume01:/var/log
+    # got this from internet to share history with local
+    # doesnt work...     - $HOME/A_docker_bash_history:/root/.bash_history
+#    links:
+#    - redis
+
+############### START for database #######################
+secrets:
+  # only used once to setup new database, then is ignored
+  # root password is not wanted here, as no docker app should have it.
+  rootPass_newDBsetup:
+    file: ./secrets/docker/rootPass_newDBsetup.secret
+  # password used by non-root user, by client such as spring-boot
+  mysqlPasswd:
+    file: ./secrets/docker/mysqlPasswd.secret
+  dbUrl:
+    file: ./secrets/docker/dbUrl.secret
+
+# by default, a "docker network" gets created using name of the
+# present folder, so override it to prevent confusion/inconsistency.
+networks:
+  sardines:
+    name: sardines-network
+############### END for database #######################
+
+volumes:
+  logvolume01: {}

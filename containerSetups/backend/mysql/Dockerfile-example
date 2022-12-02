@@ -1,0 +1,24 @@
+
+# First, specify image of a standard linux server, which gets downloaded
+# from dockerhub and serves as the docker container.
+# Be sure to specify the version (not "latest") so later
+# revisions don't break the setup if this is re-created at later date.
+FROM openjdk:8-jdk-alpine
+# run linux commands to add group and user to the new vm created above
+# they recommend making a non-root user to run the code.
+# syntax:  -G Group  ...   -S Create a system user
+RUN addgroup -S springgroup && adduser -S springuser -G springgroup
+# this code uses a logfile. The code not have permission to create
+# the logfile so do it here and chown to the user.
+# later, read it:  sudo docker exec -it mycontainerName cat accesslog.txt
+# WARNING: put all on one line. Multiple run lines are IGNORED WITHOUT ERROR!
+RUN touch accesslog.txt && chown springuser accesslog.txt && mkdir public && chown springuser public
+# use user id springuser in group springgroup as setup above
+USER springuser:springgroup
+# Now setup the spring-boot all-in-one-jar file. See other notes in this
+# folder about how to build this jar using gradle.
+ARG HOST_JAR_FILE=build/libs/spring-boot-0.0.1-SNAPSHOT.jar
+# copy jar file from HOST to the container and rename it
+COPY ${HOST_JAR_FILE} testApp.jar
+# now that the jar is copied to the container, run it on the container
+ENTRYPOINT ["java","-jar","testApp.jar"]

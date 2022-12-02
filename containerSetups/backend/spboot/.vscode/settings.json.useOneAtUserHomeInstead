@@ -1,0 +1,7 @@
+{
+    "comment here": "feb 2..... this is in project .vscode folder but could also be in ~/.config/Code/User/settings.json . Editor says java.home depreciated",
+    "comment 2": "best NOT to use this file but have it in ~/.config/Code/User/settings.json",
+    "comment3" : "to edit above: file->preferences->settings; a useless gui editor appears. Click on lumpy rectangle in upper right corner (open setting UI) to get a regular text editor",
+    "java.home": "/usr/lib/jvm/java-11-openjdk-amd64",
+    "java.jdt.ls.java.home": "/usr/lib/jvm/java-11-openjdk-amd64"
+}

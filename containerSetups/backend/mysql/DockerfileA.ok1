@@ -1,0 +1,5 @@
+# be sure to specify image version or future trouble can happen
+FROM mysql:8.0.22
+RUN mkdir /dbscripts && echo "dbscripts created"
+COPY dbscripts/* /dbscripts/
+

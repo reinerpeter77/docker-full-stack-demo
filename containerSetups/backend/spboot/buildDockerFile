@@ -1,0 +1,2 @@
+docker build -t spboottrashimage -f DockerfileA .
+sudo docker build -t spboottrashimage -f DockerfileA .
