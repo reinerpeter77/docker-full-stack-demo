@@ -28,25 +28,34 @@ function JsxDemoA( props ) {
 	var [ xyz, setxyz ] = useState(4)
 
 	
-	/* React function component has advantage over class component because:
-	*   - it lets you access dom components easily [search for "thisReactNode" to see how it works]
-	*   - use of class for react components is wonky and has lots of arrow functions and weird bindings...
-	*  There are 3 'hook functions' used here for react function components:
-	*    useState(), useRef() and useEffect. 
-	*    Their purpose is to be called by the framework as "lifecycle events", that is the framework calls them
-	*    either when the component first mounts (1 time) or every time it renders or whenever a state variable
-	*    changes. 
-	* 1. useEffect() is called by the framework conditionally according to second array argument.
-	*    It is named "useEffect()" because the name "elbow" was already taken; there is an actual
-	*    reason but I don't care.
-	*    If second argument is:  
-	*   + missing: run every time. Good for getting dimensions of window etc
-	*   + [] empty: run only once when component mounts like componentDidMount
-	*   + [aa, bb]: do only when aa or bb changes
-	*   + [] empty and returns function: runs when component unmounts
-	* 2. "useState" sets up a variable which perists between renders and queues a render when its value is changed.
-	* 3. "useRef" lets you name a dom element and reference it in the code.
-	*/
+ /* NOTE: CLASS VS FUNCTION COMPONENTS:
+  * react.js does components using either "function components" or "class components". I use
+  * "function components" because class components are wonky to use and their use seems
+  * to be phasing out. */
+  /*
+  ___ ___   _   ___ _____   _    ___ ___ ___ _____   _____ _    ___   __  __ ___ _____ _  _  ___  ___  ___ 
+ | _ \ __| /_\ / __|_   _| | |  |_ _| __| __/ __\ \ / / __| |  | __| |  \/  | __|_   _| || |/ _ \|   \/ __|
+ |   / _| / _ \ (__  | |   | |__ | || _|| _| (__ \ V / (__| |__| _|  | |\/| | _|  | | | __ | (_) | |) \__ \
+ |_|_\___/_/ \_\___| |_|   |____|___|_| |___\___| |_| \___|____|___| |_|  |_|___| |_| |_||_|\___/|___/|___/
+                                                                                                          
+   * COMPONENT LIFECYCLE METHODS: react.js has lifecycle methods called by the framework
+   * when a component first loads, another one every time it renders, another one every time
+   * a useState() thing changes value, another when component unloads, and more.
+   * Unlike other frameworks, REACT USES THE WORD "USEEFFECT" FOR "LIFECYCLE METHODS"
+   * There are 3 react.js things it calls 'hook functions' used here for react function components:
+   *    useState(), useRef() and useEffect.
+   * Below is how they are used in this project, but are not complete descriptions:
+   * 1. You code "useEffect" methods and the point it gets called in the component lifecycle
+   *    is defined according to second array arg and return value [done this way probably to
+   *    streamline code for those who code for it every day, but not for me, personally]. :
+   *   + missing: run every time. Good for getting dimensions of window etc
+   *   + [] empty: run only once when component mounts like componentDidMount
+   *   + [aa, bb]: do only when aa or bb changes
+   *   + [] empty and returns function: runs when component unmounts
+   * 2. "useState" sets up a variable which perists between renders and queues a render when its value is changed.
+   * 3. "useRef" lets you name a dom element and reference it in the code.
+   */
+
 	const thisReactNode = useRef();
 
 	// [] empty: run only once when component mounts like componentDidMount
