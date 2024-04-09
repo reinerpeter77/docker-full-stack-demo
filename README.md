@@ -1,6 +1,6 @@
-nov 20
 
 ***
+### Assume nothing is this project is correct. 
 ### DISCLAIMER: see file LICENSE.txt (it is the MIT License)   
 *** 
 *Note: This .md file on github is written in "markdown", not html. Github converts the source to html which you see here. Use visual studio code to edit because it has a "preview" window which shows result.*
