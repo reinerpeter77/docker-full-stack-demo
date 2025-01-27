@@ -2,8 +2,7 @@
 
 
 This is the spring-boot project.
-Sorry, this readme.md should describe the spring-boot project but it doesnt
-because of time constraints and the fact I'm retired.  
+Todo: write docs for this level
 
 The start page at http://localhost:8086 is plain html/javascript 
 served by spring-boot and demonstrates calling web services and web
